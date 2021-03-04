@@ -51,8 +51,8 @@ resource "google_dataflow_job" "dataflow_job" {
   parameters = {
     inputSubscription	= google_pubsub_subscription.dataflow_input_pubsub_subscription.id
     outputDeadletterTopic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.id
-    url	= var.dataflow_output_splunk_hec_url
-    token	= var.dataflow_output_splunk_hec_token
+    url	= var.splunk_hec_url
+    token	= var.splunk_hec_token
     parallelism = var.dataflow_job_parallelism
     batchCount = var.dataflow_job_batch_count
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation

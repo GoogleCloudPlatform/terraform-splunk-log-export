@@ -37,7 +37,7 @@ variable "log_filter" {
 
 # Dataflow job output
 
-variable "dataflow_output_splunk_hec_url" {
+variable "splunk_hec_url" {
   description = "Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088"
   
   validation {
@@ -46,7 +46,7 @@ variable "dataflow_output_splunk_hec_url" {
   }
 }
 
-variable "dataflow_output_splunk_hec_token" {
+variable "splunk_hec_token" {
   description = "Splunk HEC token"
   sensitive = true
 }
