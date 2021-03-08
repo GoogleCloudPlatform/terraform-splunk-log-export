@@ -13,7 +13,7 @@
 # limitations under the License.
 
 terraform {
-  required_version = "~> 0.13"
+  required_version = ">= 0.13"
 }
 
 provider "google" {
@@ -26,7 +26,7 @@ resource "random_uuid" "bucket_guid" {}
 
 locals {
   dataflow_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
-  dataflow_temporary_gcs_bucket_name = "${var.dataflow_job_name}-${random_uuid.bucket_guid.result}"
+  dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_uuid.bucket_guid.result}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
   dataflow_input_topic_name = "${var.dataflow_job_name}-input-topic"
