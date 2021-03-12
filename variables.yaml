@@ -21,8 +21,8 @@ network = ""
 log_filter = ""
 
 # Dataflow job output
-dataflow_output_splunk_hec_url = ""
-dataflow_output_splunk_hec_token = ""
+splunk_hec_url = ""
+splunk_hec_token = ""
 
 # Dataflow job parameters
 dataflow_job_name = ""

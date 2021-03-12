@@ -22,11 +22,13 @@ provider "google" {
   zone    = var.zone
 }
 
-resource "random_uuid" "bucket_guid" {}
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
 
 locals {
   dataflow_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
-  dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_uuid.bucket_guid.result}"
+  dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
   dataflow_input_topic_name = "${var.dataflow_job_name}-input-topic"

@@ -41,7 +41,7 @@ variable "splunk_hec_url" {
   description = "Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088"
   
   validation {
-    condition = can(regex("https?://.*(:[0-9]+)?", var.dataflow_output_splunk_hec_url))
+    condition = can(regex("https?://.*(:[0-9]+)?", var.splunk_hec_url))
     error_message = "Splunk HEC url must of the form <protocol>://<host>:<port> ."
   }
 }
