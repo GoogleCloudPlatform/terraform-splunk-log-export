@@ -74,9 +74,9 @@ $ terraform destroy
 ### TODOs
 
 * Support KMS-encrypted HEC token
-* Create new secure network, in addition to accepting a pre-created network
 * Create replay pipeline
-* Add Cloud Monitoring dashboard
+* Create secure network for self-contained setup if existing network is not provided
+* ~~Add Cloud Monitoring dashboard~~
 
 
 ### Authors
