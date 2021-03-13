@@ -29,6 +29,13 @@ variable "network" {
   description = "Network to deploy into"
 }
 
+# Dashboard parameters
+
+variable "workspace" {
+  description = "Cloud Monitoring Workspace to create dashboard under. This assumes Workspace is already created and project provided is already added to it. If parameter is empty, no dashboard will be created"
+  default = ""
+}
+
 # Log sink details
 
 variable "log_filter" {

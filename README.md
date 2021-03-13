@@ -17,16 +17,17 @@ project | The project to deploy to, if not set the default provider project is u
 region | Region to deploy into (for regional resources)
 zone | Zone to deploy into (for zonal resources)
 network | Network to deploy into
+workspace | (Optional) Workspace to create Monitoring dashboard in. This assumes Workspace is already created and project is already added to it. If not specified, no dashboard will be created
 log_filter | Log filter to use when exporting logs
 splunk_hec_url | Splunk HEC URL to stream data to, e.g. https://[MY_SPLUNK_IP_OR_FQDN]:8088
 splunk_hec_token | Splunk HEC token
-dataflow_template_version | Dataflow template version (default 'latest')
 dataflow_job_name | Dataflow job name. No spaces.
-dataflow_job_machine_type | Dataflow job worker machine type (default 'n1-standard-4')
-dataflow_job_machine_count | Dataflow job max worker count (default 2)
-dataflow_job_parallelism | Maximum parallel requests to Splunk (default 8)
-dataflow_job_batch_count | Batch count of messages in single request to Splunk (default 50)
-dataflow_job_disable_certificate_validation | Boolean to disable SSL certificate validation (default false)
+dataflow_template_version | (Optional) Dataflow template version (default 'latest')
+dataflow_job_machine_type | (Optional) Dataflow job worker machine type (default 'n1-standard-4')
+dataflow_job_machine_count | (Optional) Dataflow job max worker count (default 2)
+dataflow_job_parallelism | (Optional) Maximum parallel requests to Splunk (default 8)
+dataflow_job_batch_count | (Optional) Batch count of messages in single request to Splunk (default 50)
+dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
 
 ### Getting Started
 
@@ -50,9 +51,17 @@ $ terraform plan
 $ terraform apply
 ```
 
-#### Validate log export operation
+#### View log export monitoring dashboard (applicable if Monitoring Workspace parameter was provided)
 
-[TODO] Add steps to inspect Pub/Sub, Dataflow, and Splunk
+ 1. Retrieve dashboard id from terraform output
+```shell
+$ terraform output dataflow_log_export_dashboad
+```
+  The output is of the form `"projects/{project_id_or_number}/dashboards/{dashboard_id}"`.
+  
+  Take note of dashboard_id value.
+
+ 2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
 
 
 ### Cleanup

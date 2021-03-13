@@ -31,6 +31,9 @@ locals {
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
+  project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
+  organization_log_sink_name = "${var.dataflow_job_name}-organization-log-sink"
+
   dataflow_input_topic_name = "${var.dataflow_job_name}-input-topic"
   dataflow_input_subscription_name = "${var.dataflow_job_name}-input-subscription"
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
@@ -56,7 +59,7 @@ resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
 }
 
 resource "google_logging_project_sink" "project_log_sink" {
-  name = "project_log_sink"
+  name = local.project_log_sink_name
   destination = "pubsub.googleapis.com/projects/${var.project}/topics/${google_pubsub_topic.dataflow_input_pubsub_topic.name}"
   filter = var.log_filter
 
@@ -64,7 +67,7 @@ resource "google_logging_project_sink" "project_log_sink" {
 }
 
 # resource "google_logging_organization_sink" "organization_log_sink" {
-#   name = "organization_log_sink"
+#   name = local.organization_log_sink_name
 #   org_id = "ORGANIZATION_ID"
 #   destination = "pubsub.googleapis.com/projects/${var.project}/topics/${google_pubsub_topic.dataflow_input_pubsub_topic.name}"
 #   filter = var.log_filter
@@ -91,4 +94,8 @@ output "dataflow_input_topic" {
 
 output "dataflow_output_deadletter_subscription" {
     value = google_pubsub_subscription.dataflow_deadletter_pubsub_sub.name
+}
+
+output "dataflow_log_export_dashboard" {
+    value = var.workspace != "" ? google_monitoring_dashboard.splunk-export-pipeline-dashboard[0].id : ""
 }

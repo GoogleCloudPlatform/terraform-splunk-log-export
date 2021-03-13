@@ -31,3 +31,6 @@ dataflow_job_machine_count = ""
 dataflow_job_parallelism = ""
 dataflow_job_batch_count = ""
 dataflow_job_disable_certificate_validation = ""
+
+# Dashboard parameters
+workspace = ""
