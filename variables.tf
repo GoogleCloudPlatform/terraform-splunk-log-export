@@ -75,19 +75,19 @@ variable "dataflow_job_machine_type" {
 }
 
 variable "dataflow_job_machine_count" {
-  description = "Dataflow job max worker count"
+  description = "Dataflow job max worker count. Defaults to 2."
   type = number
   default = 2
 }
 
 variable "dataflow_job_parallelism" {
-  description = "Maximum parallel requests to Splunk"
+  description = "Maximum parallel requests to Splunk. Defaults to 8."
   type = number
   default = 8
 }
 
 variable "dataflow_job_batch_count" {
-  description = "Batch count of messages in single request to Splunk"
+  description = "Batch count of messages in single request to Splunk. Defaults to 50."
   type = number
   default = 50
 }
