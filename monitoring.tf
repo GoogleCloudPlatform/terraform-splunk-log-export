@@ -85,14 +85,12 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
           },
           "thresholds": [
             {
+              "value": 100,
               "color": "RED",
               "direction": "ABOVE"
             },
             {
-              "color": "RED",
-              "direction": "BELOW"
-            },
-            {
+              "value": 0,
               "color": "YELLOW",
               "direction": "ABOVE"
             }
