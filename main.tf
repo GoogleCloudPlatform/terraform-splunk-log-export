@@ -38,6 +38,8 @@ locals {
   dataflow_input_subscription_name = "${var.dataflow_job_name}-input-subscription"
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
+
+  dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {
