@@ -28,6 +28,7 @@ resource "random_id" "bucket_suffix" {
 
 locals {
   dataflow_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
+
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
@@ -40,6 +41,9 @@ locals {
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
   dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
+
+  # dataflow job parameters (not externalized for this project)
+  dataflow_job_include_pubsub_message = true
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {

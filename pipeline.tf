@@ -55,6 +55,7 @@ resource "google_dataflow_job" "dataflow_job" {
     token	= var.splunk_hec_token
     parallelism = var.dataflow_job_parallelism
     batchCount = var.dataflow_job_batch_count
+    includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
   }
   region = var.region
