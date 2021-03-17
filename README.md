@@ -22,12 +22,12 @@ log_filter | Log filter to use when exporting logs
 splunk_hec_url | Splunk HEC URL to stream data to, e.g. https://[MY_SPLUNK_IP_OR_FQDN]:8088
 splunk_hec_token | Splunk HEC token
 dataflow_job_name | Dataflow job name. No spaces.
-dataflow_template_version | (Optional) Dataflow template version (default 'latest')
 dataflow_job_machine_type | (Optional) Dataflow job worker machine type (default 'n1-standard-4')
 dataflow_job_machine_count | (Optional) Dataflow job max worker count (default 2)
 dataflow_job_parallelism | (Optional) Maximum parallel requests to Splunk (default 8)
 dataflow_job_batch_count | (Optional) Batch count of messages in single request to Splunk (default 50)
 dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
+dataflow_template_path | (Optional) Dataflow template GCS path (default 'gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk'). Override this for version pinning.
 
 ### Getting Started
 

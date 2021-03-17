@@ -44,7 +44,7 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
 
 resource "google_dataflow_job" "dataflow_job" {
   name = var.dataflow_job_name
-  template_gcs_path = local.dataflow_template_gcs_path
+  template_gcs_path = var.dataflow_template_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count

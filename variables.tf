@@ -60,9 +60,14 @@ variable "splunk_hec_token" {
 
 # Dataflow job parameters
 
-variable "dataflow_template_version" {
-  description = "Dataflow template version"
-  default = "latest"
+variable "dataflow_template_path" {
+  description = "Dataflow template path. Defaults to latest version of Google-hosted Pub/Sub to Splunk template"
+  default = "gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk"
+
+  validation {
+    condition = can(regex("gs://.+", var.dataflow_template_path))
+    error_message = "Splunk Dataflow template path must be a GCS object path gs://<bucket_name>/<path> ."
+  }
 }
 
 variable "dataflow_job_name" {
