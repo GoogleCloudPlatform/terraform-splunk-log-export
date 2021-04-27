@@ -13,11 +13,13 @@ resource "google_compute_subnetwork" "splunk_subnet" {
   region                   = var.region
   network                  = google_compute_network.splunk_export.id
   private_ip_google_access = true
-  log_config {
-    aggregation_interval = "INTERVAL_15_MIN"
-    flow_sampling        = 0.1
-    metadata             = "INCLUDE_ALL_METADATA"
-  }
+
+# Optional configuration to log network traffic at the subnet level 
+#   log_config {
+#     aggregation_interval = "INTERVAL_15_MIN"
+#     flow_sampling        = 0.1
+#     metadata             = "INCLUDE_ALL_METADATA"
+#   }
 
 }
 
