@@ -30,13 +30,13 @@ locals {
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
-  project_log_sink_name      = "${var.dataflow_job_name}-project-log-sink"
+  project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
   organization_log_sink_name = "${var.dataflow_job_name}-organization-log-sink"
 
-  dataflow_input_topic_name             = "${var.dataflow_job_name}-input-topic"
-  dataflow_input_subscription_name      = "${var.dataflow_job_name}-input-subscription"
+  dataflow_input_topic_name = "${var.dataflow_job_name}-input-topic"
+  dataflow_input_subscription_name = "${var.dataflow_job_name}-input-subscription"
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
-  dataflow_output_deadletter_sub_name   = "${var.dataflow_job_name}-deadletter-subscription"
+  dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
   dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
 
@@ -54,7 +54,7 @@ resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
 
   # messages retained for 7 days (max)
   message_retention_duration = "604800s"
-  ack_deadline_seconds       = 30
+  ack_deadline_seconds = 30
 
   # subscription never expires
   expiration_policy {
@@ -63,9 +63,9 @@ resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
 }
 
 resource "google_logging_project_sink" "project_log_sink" {
-  name        = local.project_log_sink_name
+  name = local.project_log_sink_name
   destination = "pubsub.googleapis.com/projects/${var.project}/topics/${google_pubsub_topic.dataflow_input_pubsub_topic.name}"
-  filter      = var.log_filter
+  filter = var.log_filter
 
   unique_writer_identity = true
 }
@@ -81,25 +81,25 @@ resource "google_logging_project_sink" "project_log_sink" {
 
 resource "google_pubsub_topic_iam_binding" "pubsub_iam_binding" {
   project = google_pubsub_topic.dataflow_input_pubsub_topic.project
-  topic   = google_pubsub_topic.dataflow_input_pubsub_topic.name
-  role    = "roles/pubsub.publisher"
+  topic = google_pubsub_topic.dataflow_input_pubsub_topic.name
+  role = "roles/pubsub.publisher"
   members = [
     google_logging_project_sink.project_log_sink.writer_identity,
   ]
 }
 
 output "dataflow_job_id" {
-  value = google_dataflow_job.dataflow_job.job_id
+    value = google_dataflow_job.dataflow_job.job_id
 }
 
 output "dataflow_input_topic" {
-  value = google_pubsub_topic.dataflow_input_pubsub_topic.name
+    value = google_pubsub_topic.dataflow_input_pubsub_topic.name
 }
 
 output "dataflow_output_deadletter_subscription" {
-  value = google_pubsub_subscription.dataflow_deadletter_pubsub_sub.name
+    value = google_pubsub_subscription.dataflow_deadletter_pubsub_sub.name
 }
 
 output "dataflow_log_export_dashboard" {
-  value = var.workspace != "" ? google_monitoring_dashboard.splunk-export-pipeline-dashboard[0].id : ""
+    value = var.workspace != "" ? google_monitoring_dashboard.splunk-export-pipeline-dashboard[0].id : ""
 }

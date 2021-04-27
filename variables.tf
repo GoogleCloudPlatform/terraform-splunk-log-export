@@ -22,24 +22,18 @@ variable "region" {
 
 variable "zone" {
   description = "Zone to deploy into"
-  default     = ""
+  default = ""
 }
 
 variable "network" {
   description = "Network to deploy into"
 }
 
-variable "create_network" {
-  description = "Boolean value if a new network needs to be created."
-  default     = false
-  type        = bool
-}
-
 # Dashboard parameters
 
 variable "workspace" {
   description = "Cloud Monitoring Workspace to create dashboard under. This assumes Workspace is already created and project provided is already added to it. If parameter is empty, no dashboard will be created"
-  default     = ""
+  default = ""
 }
 
 # Log sink details
@@ -52,26 +46,26 @@ variable "log_filter" {
 
 variable "splunk_hec_url" {
   description = "Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088"
-
+  
   validation {
-    condition     = can(regex("https?://.*(:[0-9]+)?", var.splunk_hec_url))
+    condition = can(regex("https?://.*(:[0-9]+)?", var.splunk_hec_url))
     error_message = "Splunk HEC url must of the form <protocol>://<host>:<port> ."
   }
 }
 
 variable "splunk_hec_token" {
   description = "Splunk HEC token"
-  sensitive   = true
+  sensitive = true
 }
 
 # Dataflow job parameters
 
 variable "dataflow_template_path" {
   description = "Dataflow template path. Defaults to latest version of Google-hosted Pub/Sub to Splunk template"
-  default     = "gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk"
+  default = "gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk"
 
   validation {
-    condition     = can(regex("gs://.+", var.dataflow_template_path))
+    condition = can(regex("gs://.+", var.dataflow_template_path))
     error_message = "Splunk Dataflow template path must be a GCS object path gs://<bucket_name>/<path> ."
   }
 }
@@ -82,29 +76,29 @@ variable "dataflow_job_name" {
 
 variable "dataflow_job_machine_type" {
   description = "Dataflow job worker machine type"
-  default     = "n1-standard-4"
+  default = "n1-standard-4"
 }
 
 variable "dataflow_job_machine_count" {
   description = "Dataflow job max worker count. Defaults to 2."
-  type        = number
-  default     = 2
+  type = number
+  default = 2
 }
 
 variable "dataflow_job_parallelism" {
   description = "Maximum parallel requests to Splunk. Defaults to 8."
-  type        = number
-  default     = 8
+  type = number
+  default = 8
 }
 
 variable "dataflow_job_batch_count" {
   description = "Batch count of messages in single request to Splunk. Defaults to 50."
-  type        = number
-  default     = 50
+  type = number
+  default = 50
 }
 
 variable "dataflow_job_disable_certificate_validation" {
   description = "Disable SSL certificate validation (default: false)"
-  type        = bool
-  default     = false
+  type = bool
+  default = false
 }
