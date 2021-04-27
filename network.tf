@@ -58,6 +58,7 @@ resource "google_compute_router_nat" "dataflow_nat" {
 }
 
 # Creating firewall rule so that dataflow jobs with > 1 worker can communicate over internal IPs.
+# Source: https://cloud.google.com/dataflow/docs/guides/routes-firewall#firewall_rules_required_by
 resource "google_compute_firewall" "connect_dataflow_workers" {
   count = var.create_network == true ? 1 : 0
 
