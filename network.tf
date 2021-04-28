@@ -14,12 +14,12 @@ resource "google_compute_subnetwork" "splunk_subnet" {
   network                  = google_compute_network.splunk_export.id
   private_ip_google_access = true
 
-# Optional configuration to log network traffic at the subnet level 
-#   log_config {
-#     aggregation_interval = "INTERVAL_15_MIN"
-#     flow_sampling        = 0.1
-#     metadata             = "INCLUDE_ALL_METADATA"
-#   }
+  # Optional configuration to log network traffic at the subnet level 
+  #   log_config {
+  #     aggregation_interval = "INTERVAL_15_MIN"
+  #     flow_sampling        = 0.1
+  #     metadata             = "INCLUDE_ALL_METADATA"
+  #   }
 
 }
 
@@ -47,7 +47,7 @@ resource "google_compute_router_nat" "dataflow_nat" {
   nat_ip_allocate_option             = "MANUAL_ONLY"
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
   nat_ips                            = google_compute_address.dataflow_nat_ip_address.*.self_link
-  min_ports_per_vm                   = 1024
+  min_ports_per_vm                   = 128
   subnetwork {
     name                    = google_compute_subnetwork.splunk_subnet.id
     source_ip_ranges_to_nat = ["PRIMARY_IP_RANGE"]
