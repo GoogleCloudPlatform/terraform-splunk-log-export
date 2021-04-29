@@ -39,20 +39,20 @@ resource "google_storage_bucket" "dataflow_job_temp_bucket" {
 resource "google_storage_bucket_object" "dataflow_job_temp_object" {
   name = local.dataflow_temporary_gcs_bucket_path
   content = "Placeholder for Dataflow to write temporary files"
-  bucket  = google_storage_bucket.dataflow_job_temp_bucket.name
+  bucket = google_storage_bucket.dataflow_job_temp_bucket.name
 }
 
 resource "google_dataflow_job" "dataflow_job" {
   name = var.dataflow_job_name
   template_gcs_path = var.dataflow_template_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
-  machine_type      = var.dataflow_job_machine_type
-  max_workers       = var.dataflow_job_machine_count
+  machine_type = var.dataflow_job_machine_type
+  max_workers = var.dataflow_job_machine_count
   parameters = {
     inputSubscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.id
     outputDeadletterTopic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.id
-    url = var.splunk_hec_url
-    token = var.splunk_hec_token
+    url       = var.splunk_hec_url
+    token     = var.splunk_hec_token
     parallelism = var.dataflow_job_parallelism
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message

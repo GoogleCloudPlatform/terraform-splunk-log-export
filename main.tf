@@ -82,7 +82,7 @@ resource "google_logging_project_sink" "project_log_sink" {
 resource "google_pubsub_topic_iam_binding" "pubsub_iam_binding" {
   project = google_pubsub_topic.dataflow_input_pubsub_topic.project
   topic = google_pubsub_topic.dataflow_input_pubsub_topic.name
-  role  = "roles/pubsub.publisher"
+  role = "roles/pubsub.publisher"
   members = [
     google_logging_project_sink.project_log_sink.writer_identity,
   ]
