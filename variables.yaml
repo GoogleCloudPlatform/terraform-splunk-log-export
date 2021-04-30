@@ -16,6 +16,8 @@ project = ""
 region = ""
 zone = ""
 network = ""
+create_network = false
+primary_subnet_cidr = "10.128.0.0/20"
 
 # Log sink details
 log_filter = ""

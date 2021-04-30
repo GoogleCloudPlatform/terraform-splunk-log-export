@@ -29,6 +29,18 @@ variable "network" {
   description = "Network to deploy into"
 }
 
+variable "create_network" {
+  description = "Boolean value if a new network needs to be created."
+  default     = false
+  type        = bool
+}
+
+variable "primary_subnet_cidr" {
+  type        = string
+  description = "The CIDR Range of the primary subnet"
+  default     = "10.128.0.0/20"
+}
+
 # Dashboard parameters
 
 variable "workspace" {
