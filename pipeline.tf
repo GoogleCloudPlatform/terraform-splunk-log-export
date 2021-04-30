@@ -49,16 +49,16 @@ resource "google_dataflow_job" "dataflow_job" {
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count
   parameters = {
-    inputSubscription	= google_pubsub_subscription.dataflow_input_pubsub_subscription.id
+    inputSubscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.id
     outputDeadletterTopic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.id
-    url	= var.splunk_hec_url
-    token	= var.splunk_hec_token
+    url       = var.splunk_hec_url
+    token     = var.splunk_hec_token
     parallelism = var.dataflow_job_parallelism
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
   }
   region = var.region
-  network = var.network
+  network = var.create_network == true ? google_compute_network.splunk_export.id : var.network
   ip_configuration = "WORKER_IP_PRIVATE"
 }
