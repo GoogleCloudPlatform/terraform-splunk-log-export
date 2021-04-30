@@ -48,7 +48,7 @@ resource "google_dataflow_job" "dataflow_job" {
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count
-  parameters = {
+  parameters = merge({
     inputSubscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.id
     outputDeadletterTopic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.id
     url       = var.splunk_hec_url
@@ -57,10 +57,13 @@ resource "google_dataflow_job" "dataflow_job" {
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
-    javascriptTextTransformGcsPath = var.dataflow_job_udf_gcs_path
-    javascriptTextTransformFunctionName = var.dataflow_job_udf_function_name
-  }
+  },
+    (var.dataflow_job_udf_gcs_path != "" && var.dataflow_job_udf_function_name != "") ?
+    {
+      javascriptTextTransformGcsPath = var.dataflow_job_udf_gcs_path
+      javascriptTextTransformFunctionName = var.dataflow_job_udf_function_name
+    } : {})
   region = var.region
-  network = var.create_network == true ? google_compute_network.splunk_export.id : var.network
+  network = var.network
   ip_configuration = "WORKER_IP_PRIVATE"
 }

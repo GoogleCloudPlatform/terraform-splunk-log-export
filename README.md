@@ -86,6 +86,7 @@ $ terraform destroy
 ### Authors
 
 * **Roy Arsan** - [rarsan](https://github.com/rarsan)
+* **Nick Predey** - [npredey](https://github.com/npredey)
 
 
 ### Copyright & License

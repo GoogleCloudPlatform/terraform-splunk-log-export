@@ -11,7 +11,7 @@ resource "google_compute_subnetwork" "splunk_subnet" {
   name                     = local.subnet_name
   ip_cidr_range            = var.primary_subnet_cidr
   region                   = var.region
-  network                  = google_compute_network.splunk_export.id
+  network                  = google_compute_network.splunk_export[count.index].id
   private_ip_google_access = true
 
   # Optional configuration to log network traffic at the subnet level 
@@ -27,29 +27,29 @@ resource "google_compute_router" "dataflow_to_splunk_router" {
   count = var.create_network == true ? 1 : 0
 
   name    = "${var.network}-${var.region}-router"
-  region  = google_compute_subnetwork.splunk_subnet.region
-  network = google_compute_network.splunk_export.id
+  region  = google_compute_subnetwork.splunk_subnet[count.index].region
+  network = google_compute_network.splunk_export[count.index].id
 }
 
 resource "google_compute_address" "dataflow_nat_ip_address" {
   count = var.create_network == true ? 1 : 0
 
   name   = "dataflow-splunk-nat-ip-address"
-  region = google_compute_subnetwork.splunk_subnet.region
+  region = google_compute_subnetwork.splunk_subnet[count.index].region
 }
 
 resource "google_compute_router_nat" "dataflow_nat" {
   count = var.create_network == true ? 1 : 0
 
   name                               = "${var.network}-${var.region}-router-nat"
-  router                             = google_compute_router.dataflow_to_splunk_router.name
-  region                             = google_compute_router.dataflow_to_splunk_router.region
+  router                             = google_compute_router.dataflow_to_splunk_router[count.index].name
+  region                             = google_compute_router.dataflow_to_splunk_router[count.index].region
   nat_ip_allocate_option             = "MANUAL_ONLY"
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
   nat_ips                            = google_compute_address.dataflow_nat_ip_address.*.self_link
   min_ports_per_vm                   = 128
   subnetwork {
-    name                    = google_compute_subnetwork.splunk_subnet.id
+    name                    = google_compute_subnetwork.splunk_subnet[count.index].id
     source_ip_ranges_to_nat = ["PRIMARY_IP_RANGE"]
   }
 
@@ -65,7 +65,7 @@ resource "google_compute_firewall" "connect_dataflow_workers" {
   count = var.create_network == true ? 1 : 0
 
   name    = "dataflow-internal-ip-fwr"
-  network = google_compute_network.splunk_export.id
+  network = google_compute_network.splunk_export[count.index].id
 
   allow {
     protocol = "tcp"
