@@ -25,14 +25,19 @@ variable "zone" {
   default = ""
 }
 
-variable "network" {
-  description = "Network to deploy into"
-}
-
 variable "create_network" {
   description = "Boolean value if a new network needs to be created."
   default     = false
   type        = bool
+}
+
+variable "network" {
+  description = "Network to deploy into"
+}
+
+variable "subnet" {
+  description = "Subnet to deploy into. This is required when deploying into existing custom mode network"
+  default = ""
 }
 
 variable "primary_subnet_cidr" {

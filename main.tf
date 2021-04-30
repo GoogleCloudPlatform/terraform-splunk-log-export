@@ -30,7 +30,7 @@ locals {
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
-  subnet_name = "${var.network}-${var.region}"
+  subnet_name = coalesce(var.subnet, "${var.network}-${var.region}")
   project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
   organization_log_sink_name = "${var.dataflow_job_name}-organization-log-sink"
 

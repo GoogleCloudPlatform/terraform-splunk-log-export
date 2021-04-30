@@ -16,8 +16,9 @@ Parameter | Description
 project | The project to deploy to, if not set the default provider project is used
 region | Region to deploy into (for regional resources)
 zone | Zone to deploy into (for zonal resources)
-network | Network to deploy into
 create\_network | Boolean value if a new network needs to be created.
+network | Network to deploy into
+subnet | Subnet to deploy into. This is **required** when deploying into existing custom mode network
 primary\_subnet\_cidr | The CIDR Range of the primary subnet
 workspace | (Optional) Workspace to create Monitoring dashboard in. This assumes Workspace is already created and project is already added to it. If not specified, no dashboard will be created
 log_filter | Log filter to use when exporting logs
