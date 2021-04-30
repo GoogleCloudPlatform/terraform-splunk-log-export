@@ -27,6 +27,8 @@ dataflow_job_machine_count | (Optional) Dataflow job max worker count (default 2
 dataflow_job_parallelism | (Optional) Maximum parallel requests to Splunk (default 8)
 dataflow_job_batch_count | (Optional) Batch count of messages in single request to Splunk (default 50)
 dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
+dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
+dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
 dataflow_template_path | (Optional) Dataflow template GCS path (default 'gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk'). Override this for version pinning.
 
 ### Getting Started

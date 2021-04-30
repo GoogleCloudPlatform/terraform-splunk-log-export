@@ -102,3 +102,13 @@ variable "dataflow_job_disable_certificate_validation" {
   type = bool
   default = false
 }
+
+variable "dataflow_job_udf_gcs_path" {
+  description = "[Optional Dataflow UDF] GCS path for JavaScript file (default: '')"
+  default = ""
+}
+
+variable "dataflow_job_udf_function_name" {
+  description = "[Optional Dataflow UDF] Name of JavaScript function to be called (default: '')"
+  default = ""
+}

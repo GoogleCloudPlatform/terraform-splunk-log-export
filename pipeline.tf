@@ -57,6 +57,8 @@ resource "google_dataflow_job" "dataflow_job" {
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
+    javascriptTextTransformGcsPath = var.dataflow_job_udf_gcs_path
+    javascriptTextTransformFunctionName = var.dataflow_job_udf_function_name
   }
   region = var.region
   network = var.network
