@@ -59,6 +59,6 @@ resource "google_dataflow_job" "dataflow_job" {
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
   }
   region = var.region
-  network = var.create_netowork == true ? google_compute_network.splunk_export.id : var.network
+  network = var.create_network == true ? google_compute_network.splunk_export.id : var.network
   ip_configuration = "WORKER_IP_PRIVATE"
 }
