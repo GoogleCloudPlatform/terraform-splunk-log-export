@@ -42,9 +42,16 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
   bucket = google_storage_bucket.dataflow_job_temp_bucket.name
 }
 
+resource "random_id" "dataflow_job_instance" {
+  byte_length = 2
+  keepers = {
+    template_gcs_path = var.dataflow_template_path
+  }
+}
+
 resource "google_dataflow_job" "dataflow_job" {
-  name = var.dataflow_job_name
-  template_gcs_path = var.dataflow_template_path
+  name = "${var.dataflow_job_name}-${random_id.dataflow_job_instance.hex}"
+  template_gcs_path = random_id.dataflow_job_instance.keepers.template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count
