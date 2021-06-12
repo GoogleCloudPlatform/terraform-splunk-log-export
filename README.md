@@ -80,7 +80,7 @@ $ terraform destroy
 
 * Support KMS-encrypted HEC token
 * Create replay pipeline
-* Create secure network for self-contained setup if existing network is not provided
+* ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~
 
 
