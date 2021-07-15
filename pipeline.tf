@@ -72,6 +72,10 @@ resource "google_dataflow_job" "dataflow_job" {
     } : {})
   region = var.region
   network = var.network
-  subnetwork = var.create_network == true ? "regions/${google_compute_subnetwork.splunk_subnet[0].region}/subnetworks/${google_compute_subnetwork.splunk_subnet[0].name}" : "regions/${var.region}/subnetworks/${local.subnet_name}"
+  subnetwork = "regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration = "WORKER_IP_PRIVATE"
+
+  depends_on = [
+    google_compute_subnetwork.splunk_subnet
+  ]
 }

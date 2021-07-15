@@ -14,7 +14,7 @@
 
 project = ""
 region = ""
-zone = ""
+
 create_network = false
 network = ""
 subnet = ""

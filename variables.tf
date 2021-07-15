@@ -17,16 +17,11 @@ variable "project" {
 }
 
 variable "region" {
-  description = "Region to deploy into"
-}
-
-variable "zone" {
-  description = "Zone to deploy into"
-  default = ""
+  description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC)"
 }
 
 variable "create_network" {
-  description = "Boolean value if a new network needs to be created."
+  description = "Boolean value specifying if a new network needs to be created."
   default     = false
   type        = bool
 }
@@ -36,7 +31,7 @@ variable "network" {
 }
 
 variable "subnet" {
-  description = "Subnet to deploy into. This is required when deploying into existing custom mode network"
+  description = "Subnet to deploy into. This is required when deploying into existing network (e.g. Shared VPC)"
   default = ""
 }
 
