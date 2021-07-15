@@ -78,6 +78,7 @@ $ terraform destroy
 ### TODOs
 
 * Support KMS-encrypted HEC token
+* Expose logging level knob
 * Create replay pipeline
 * ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~
