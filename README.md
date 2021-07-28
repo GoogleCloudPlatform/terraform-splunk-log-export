@@ -38,6 +38,13 @@ dataflow_template_path | (Optional) Dataflow template GCS path (default 'gs://da
 #### Requirements
 * Terraform 0.13+
 
+#### Enabling APIs
+Before deploying the Terraform in a Google Cloud Platform Project, the following APIs must be enabled:
+* Compute Engine API
+* Dataflow API
+
+For information on enabling Google Cloud Platform APIs, please see [Getting Started: Enabling APIs](https://cloud.google.com/apis/docs/getting-started#enabling_apis).
+
 #### Setup working directory
 
 1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
