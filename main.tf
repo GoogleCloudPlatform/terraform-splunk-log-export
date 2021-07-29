@@ -39,7 +39,7 @@ locals {
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
   dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
-
+  dataflow_deadletter_template_gcs_path = "gs://dataflow-templates/${var.dataflow_replay_template_version}/Cloud_PubSub_to_Cloud_PubSub"
   # dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
 }

@@ -124,3 +124,9 @@ variable "dataflow_job_udf_function_name" {
   description = "[Optional Dataflow UDF] Name of JavaScript function to be called (default: '')"
   default = ""
 }
+
+variable "dataflow_replay_template_version" {
+  type        = string
+  description = "Dataflow template version for the replay job."
+  default     = "latest"
+}

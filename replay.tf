@@ -21,23 +21,20 @@ After the deadletter Pub/Sub topic has no more messages, comment out the module 
 `terraform apply -target` usage documentation is here: https://www.terraform.io/docs/cli/commands/apply.html
 */
 
-# resource "random_id" "bucket_suffix" {
-#   byte_length = 4
-# }
-
-# resource "google_dataflow_job" "splunk_dataflow_replay" {
-#   name              = local.dataflow_replay_job_name
-#   template_gcs_path = local.dataflow_deadletter_template_gcs_path
-#   temp_gcs_location = "gs://${var.splunk_dataflow_context.dataflow_temporary_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
-#   machine_type      = var.dataflow_replay_job_machine_type
-#   max_workers       = var.dataflow_replay_job_machine_count
-#   parameters = {
-#     inputSubscription = var.splunk_dataflow_context.dataflow_output_deadletter_subscription
-#     outputTopic       = var.splunk_dataflow_context.dataflow_input_topic
-#   }
-#   region                = var.region
-#   network               = var.splunk_dataflow_context.splunk_network
-#   subnetwork            = var.splunk_dataflow_context.subnetwork_name
-#   ip_configuration      = "WORKER_IP_PRIVATE"
-#   service_account_email = var.splunk_dataflow_context.dataflow_worker_email
-# }
+resource "google_dataflow_job" "splunk_dataflow_replay" {
+  name              = local.dataflow_replay_job_name
+  template_gcs_path = local.dataflow_deadletter_template_gcs_path
+  temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
+  machine_type      = var.dataflow_job_machine_type
+  max_workers       = var.dataflow_job_machine_count
+  parameters = {
+    inputSubscription = google_pubsub_subscription.dataflow_deadletter_pubsub_sub.id
+    outputTopic       = google_pubsub_topic.dataflow_input_pubsub_topic.id
+  }
+  region                = var.region
+#   TODO have the network variables vary on if the network is supplied or created.
+  network               = google_compute_network.splunk_export[0].id
+  subnetwork            = "regions/${google_compute_subnetwork.splunk_subnet[0].region}/subnetworks/${google_compute_subnetwork.splunk_subnet[0].name}"
+  ip_configuration      = "WORKER_IP_PRIVATE"
+#   service_account_email = ""
+}
