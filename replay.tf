@@ -32,9 +32,8 @@ resource "google_dataflow_job" "splunk_dataflow_replay" {
     outputTopic       = google_pubsub_topic.dataflow_input_pubsub_topic.id
   }
   region                = var.region
-#   TODO have the network variables vary on if the network is supplied or created.
-  network               = google_compute_network.splunk_export[0].id
-  subnetwork            = "regions/${google_compute_subnetwork.splunk_subnet[0].region}/subnetworks/${google_compute_subnetwork.splunk_subnet[0].name}"
+  network               = var.network
+  subnetwork            = "regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration      = "WORKER_IP_PRIVATE"
 #   service_account_email = ""
 }
