@@ -72,6 +72,12 @@ variable "splunk_hec_token" {
 
 # Dataflow job parameters
 
+variable "dataflow_template_version" {
+  type        = string
+  description = "Dataflow template version for the replay job."
+  default     = "latest"
+}
+
 variable "dataflow_template_path" {
   description = "Dataflow template path. Defaults to latest version of Google-hosted Pub/Sub to Splunk template"
   default = "gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk"
@@ -123,10 +129,4 @@ variable "dataflow_job_udf_gcs_path" {
 variable "dataflow_job_udf_function_name" {
   description = "[Optional Dataflow UDF] Name of JavaScript function to be called (default: '')"
   default = ""
-}
-
-variable "dataflow_replay_template_version" {
-  type        = string
-  description = "Dataflow template version for the replay job."
-  default     = "latest"
 }

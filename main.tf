@@ -28,6 +28,7 @@ resource "random_id" "bucket_suffix" {
 locals {
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
+  dataflow_template_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
 
   subnet_name = coalesce(var.subnet, "${var.network}-${var.region}")
   project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
@@ -39,7 +40,7 @@ locals {
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
   dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
-  dataflow_deadletter_template_gcs_path = "gs://dataflow-templates/${var.dataflow_replay_template_version}/Cloud_PubSub_to_Cloud_PubSub"
+  dataflow_deadletter_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Cloud_PubSub"
   # dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
 }

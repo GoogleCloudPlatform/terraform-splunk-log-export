@@ -45,7 +45,7 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
 resource "random_id" "dataflow_job_instance" {
   byte_length = 2
   keepers = {
-    template_gcs_path = var.dataflow_template_path
+    template_gcs_path = local.dataflow_template_path
   }
 }
 
