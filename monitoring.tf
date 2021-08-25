@@ -54,7 +54,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "scorecard": {
           "timeSeriesQuery": {
             "timeSeriesFilter": {
-              "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\" metric.label.\"ptransform\"=\"WriteToSplunk/Create KV pairs/Inject Keys\"",
+              "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\" metric.label.\"ptransform\"=\"WriteToSplunk/Create KV pairs/Inject Keys\"",
               "aggregation": {
                 "alignmentPeriod": "3600s",
                 "perSeriesAligner": "ALIGN_SUM",
@@ -136,7 +136,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\" metric.label.\"pcollection\"=\"WriteToSplunk/Create KV pairs/Inject Keys.out0\"",
+                  "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\" metric.label.\"pcollection\"=\"WriteToSplunk/Create KV pairs/Inject Keys.out0\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_RATE"
@@ -196,7 +196,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "scorecard": {
           "timeSeriesQuery": {
             "timeSeriesFilter": {
-              "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\"",
+              "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
               "aggregation": {
                 "alignmentPeriod": "60s",
                 "perSeriesAligner": "ALIGN_MAX",
@@ -216,7 +216,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-failed-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\"",
+                  "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-failed-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_MEAN",
@@ -230,7 +230,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"custom.googleapis.com/dataflow/total-failed-messages\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\"",
+                  "filter": "metric.type=\"custom.googleapis.com/dataflow/total-failed-messages\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_MEAN",
@@ -460,7 +460,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"dataflow.googleapis.com/job/current_num_vcpus\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\"",
+                  "filter": "metric.type=\"dataflow.googleapis.com/job/current_num_vcpus\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_MEAN",
@@ -526,7 +526,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"dataflow.googleapis.com/job/system_lag\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${var.dataflow_job_name}\"",
+                  "filter": "metric.type=\"dataflow.googleapis.com/job/system_lag\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_MEAN",

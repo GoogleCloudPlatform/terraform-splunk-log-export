@@ -31,7 +31,7 @@ dataflow_job_batch_count | (Optional) Batch count of messages in single request 
 dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
 dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
 dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
-dataflow_template_path | (Optional) Dataflow template GCS path (default 'gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk'). Override this for version pinning.
+dataflow_template_version | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'
 
 ### Getting Started
 
@@ -74,6 +74,11 @@ $ terraform output dataflow_log_export_dashboad
 
  2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
 
+#### Deploy replay pipeline
+
+In the `replay.tf` file, uncomment the code under `splunk_dataflow_replay` and follow the sequence of `terraform plan` and `terraform apply`.
+
+Once the replay pipeline is no longer needed (the number of messages in the PubSub deadletter topic are at 0), comment out `splunk_dataflow_replay` and follow the `plan` and `apply` sequence above.
 
 ### Cleanup
 
@@ -86,7 +91,7 @@ $ terraform destroy
 
 * Support KMS-encrypted HEC token
 * Expose logging level knob
-* Create replay pipeline
+* ~~Create replay pipeline~~
 * ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~
 
