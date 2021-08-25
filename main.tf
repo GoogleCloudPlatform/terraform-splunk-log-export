@@ -21,26 +21,39 @@ provider "google" {
   region  = var.region
 }
 
+# Generate new random hex to be used for bucket name
 resource "random_id" "bucket_suffix" {
   byte_length = 4
+}
+
+# Generate new random id each time we switch to a new template version id,
+# to be used for pipeline job name to force job replacement vs in-place update
+resource "random_id" "dataflow_job_instance" {
+  byte_length = 2
+  keepers = {
+    dataflow_template_version = var.dataflow_template_version
+  }
 }
 
 locals {
   dataflow_temporary_gcs_bucket_name = "${var.project}-${var.dataflow_job_name}-${random_id.bucket_suffix.hex}"
   dataflow_temporary_gcs_bucket_path = "tmp/"
-  dataflow_template_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
+
+  dataflow_splunk_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
+  dataflow_pubsub_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Cloud_PubSub"
 
   subnet_name = coalesce(var.subnet, "${var.network}-${var.region}")
   project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
   organization_log_sink_name = "${var.dataflow_job_name}-organization-log-sink"
+
+  dataflow_main_job_name = "${var.dataflow_job_name}-main-${random_id.dataflow_job_instance.hex}"
+  dataflow_replay_job_name = "${var.dataflow_job_name}-replay-${random_id.dataflow_job_instance.hex}"
 
   dataflow_input_topic_name = "${var.dataflow_job_name}-input-topic"
   dataflow_input_subscription_name = "${var.dataflow_job_name}-input-subscription"
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
-  dataflow_replay_job_name = "${var.dataflow_job_name}-replay"
-  dataflow_deadletter_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Cloud_PubSub"
   # dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
 }

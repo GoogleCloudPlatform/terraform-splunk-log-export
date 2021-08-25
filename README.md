@@ -31,7 +31,7 @@ dataflow_job_batch_count | (Optional) Batch count of messages in single request 
 dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
 dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
 dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
-dataflow_template_path | (Optional) Dataflow template GCS path (default 'gs://dataflow-templates/latest/Cloud_PubSub_to_Splunk'). Override this for version pinning.
+dataflow_template_version | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'
 
 ### Getting Started
 

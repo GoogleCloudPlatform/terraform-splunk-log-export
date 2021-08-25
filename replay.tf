@@ -21,9 +21,10 @@ After the deadletter Pub/Sub topic has no more messages, comment out the module 
 `terraform apply -target` usage documentation is here: https://www.terraform.io/docs/cli/commands/apply.html
 */
 
+/*
 resource "google_dataflow_job" "splunk_dataflow_replay" {
   name              = local.dataflow_replay_job_name
-  template_gcs_path = local.dataflow_deadletter_template_gcs_path
+  template_gcs_path = local.dataflow_pubsub_template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
   machine_type      = var.dataflow_job_machine_type
   max_workers       = var.dataflow_job_machine_count
@@ -35,5 +36,9 @@ resource "google_dataflow_job" "splunk_dataflow_replay" {
   network               = var.network
   subnetwork            = "regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration      = "WORKER_IP_PRIVATE"
-#   service_account_email = ""
+
+  depends_on = [
+    google_compute_subnetwork.splunk_subnet
+  ]
 }
+*/
