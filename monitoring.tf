@@ -32,90 +32,35 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
     "columns": "3",
     "widgets": [
       {
-        "title": "Log Sink Volume (Hourly)",
+        "title": "Total Messages Exported (All-time)", 
         "scorecard": {
           "timeSeriesQuery": {
             "timeSeriesFilter": {
-              "filter": "metric.type=\"logging.googleapis.com/exports/byte_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\"",
-              "aggregation": {
-                "alignmentPeriod": "3600s",
-                "perSeriesAligner": "ALIGN_SUM",
-                "crossSeriesReducer": "REDUCE_SUM"
-              }
-            }
-          },
-          "sparkChartView": {
-            "sparkChartType": "SPARK_LINE"
-          }
-        }
-      },
-      {
-        "title": "Total Logs Exported (Hourly)",
-        "scorecard": {
-          "timeSeriesQuery": {
-            "timeSeriesFilter": {
-              "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\" metric.label.\"ptransform\"=\"WriteToSplunk/Create KV pairs/Inject Keys\"",
-              "aggregation": {
-                "alignmentPeriod": "3600s",
-                "perSeriesAligner": "ALIGN_SUM",
-                "crossSeriesReducer": "REDUCE_SUM"
-              }
-            }
-          },
-          "sparkChartView": {
-            "sparkChartType": "SPARK_LINE"
-          }
-        }
-      },
-      {
-        "title": "Current Logs in Deadletter",
-        "scorecard": {
-          "timeSeriesQuery": {
-            "timeSeriesFilter": {
-              "filter": "metric.type=\"pubsub.googleapis.com/subscription/num_undelivered_messages\" resource.type=\"pubsub_subscription\" resource.label.\"subscription_id\"=monitoring.regex.full_match(\"${local.dataflow_output_deadletter_sub_name}\")",
               "aggregation": {
                 "alignmentPeriod": "60s",
-                "perSeriesAligner": "ALIGN_NEXT_OLDER",
-                "crossSeriesReducer": "REDUCE_SUM"
-              }
+                "crossSeriesReducer": "REDUCE_MAX",
+                "perSeriesAligner": "ALIGN_MAX"
+              },
+              "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"splunk-export-pipeline-main-3258\""
             }
-          },
-          "sparkChartView": {
-            "sparkChartType": "SPARK_LINE"
-          },
-          "thresholds": [
-            {
-              "value": 100,
-              "color": "RED",
-              "direction": "ABOVE"
-            },
-            {
-              "value": 0,
-              "color": "YELLOW",
-              "direction": "ABOVE"
-            }
-          ]
+          }
         }
       },
       {
-        "title": "Logs Throughput from Log Sink (Input Rate)",
+        "title": "Log Sink Data Rate ",
         "xyChart": {
           "dataSets": [
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"logging.googleapis.com/exports/log_entry_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\"",
+                  "filter": "metric.type=\"logging.googleapis.com/exports/byte_count\" resource.type=\"logging_sink\"  resource.label.\"name\"=\"${local.project_log_sink_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_RATE"
-                  },
-                  "secondaryAggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_MEAN"
                   }
                 }
               },
-              "plotType": "LINE",
+              "plotType": "STACKED_BAR",
               "minAlignmentPeriod": "60s"
             }
           ],
@@ -130,34 +75,25 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         }
       },
       {
-        "title": "Logs Throughput to Splunk (Output Rate)",
+        "title": "Logs Exported by Pipeline (Hourly)",
         "xyChart": {
+          "chartOptions": {
+            "mode": "COLOR"
+          },
           "dataSets": [
             {
+              "plotType": "STACKED_BAR",
+              "targetAxis": "Y1",
               "timeSeriesQuery": {
-                "timeSeriesFilter": {
-                  "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\" metric.label.\"pcollection\"=\"WriteToSplunk/Create KV pairs/Inject Keys.out0\"",
-                  "aggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_RATE"
-                  },
-                  "secondaryAggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_MEAN"
-                  }
-                }
-              },
-              "plotType": "LINE",
-              "minAlignmentPeriod": "60s"
+                "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| filter (resource.job_name == '${local.dataflow_main_job_name}')\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| group_by 60m, sum(val())\n"
+              }
             }
           ],
+          "thresholds": [],
           "timeshiftDuration": "0s",
           "yAxis": {
             "label": "y1Axis",
             "scale": "LINEAR"
-          },
-          "chartOptions": {
-            "mode": "COLOR"
           }
         }
       },
@@ -192,102 +128,13 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         }
       },
       {
-        "title": "Total Messages Exported (All-time)",
-        "scorecard": {
-          "timeSeriesQuery": {
-            "timeSeriesFilter": {
-              "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
-              "aggregation": {
-                "alignmentPeriod": "60s",
-                "perSeriesAligner": "ALIGN_MAX",
-                "crossSeriesReducer": "REDUCE_MAX"
-              }
-            }
-          },
-          "sparkChartView": {
-            "sparkChartType": "SPARK_LINE"
-          }
-        }
-      },
-      {
-        "title": "Total Messages Failed (All-time)",
+        "title": "Input Throughput from Log Sink (EPS)",
         "xyChart": {
           "dataSets": [
             {
               "timeSeriesQuery": {
                 "timeSeriesFilter": {
-                  "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-failed-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
-                  "aggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_MEAN",
-                    "crossSeriesReducer": "REDUCE_SUM"
-                  }
-                }
-              },
-              "plotType": "LINE",
-              "minAlignmentPeriod": "60s"
-            },
-            {
-              "timeSeriesQuery": {
-                "timeSeriesFilter": {
-                  "filter": "metric.type=\"custom.googleapis.com/dataflow/total-failed-messages\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
-                  "aggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_MEAN",
-                    "crossSeriesReducer": "REDUCE_SUM"
-                  }
-                }
-              },
-              "plotType": "LINE",
-              "minAlignmentPeriod": "60s"
-            }
-          ],
-          "timeshiftDuration": "0s",
-          "yAxis": {
-            "label": "y1Axis",
-            "scale": "LINEAR"
-          },
-          "chartOptions": {
-            "mode": "COLOR"
-          }
-        }
-      },
-      {
-        "title": "Total Messages Replayed (All-time)",
-        "xyChart": {
-          "dataSets": [
-            {
-              "timeSeriesQuery": {
-                "timeSeriesFilter": {
-                  "filter": "metric.type=\"dataflow.googleapis.com/job/elements_produced_count\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_replay_job_name}\"",
-                  "aggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_MEAN"
-                  }
-                }
-              },
-              "plotType": "LINE",
-              "minAlignmentPeriod": "60s"
-            }
-          ],
-          "timeshiftDuration": "0s",
-          "yAxis": {
-            "label": "y1Axis",
-            "scale": "LINEAR"
-          },
-          "chartOptions": {
-            "mode": "COLOR"
-          }
-        }
-      },
-      {
-        "title": "Log Sink Exported Count",
-        "xyChart": {
-          "dataSets": [
-            {
-              "timeSeriesQuery": {
-                "timeSeriesFilter": {
-                  "filter": "metric.type=\"logging.googleapis.com/exports/log_entry_count\" resource.type=\"logging_sink\"  resource.label.\"name\"=\"${local.project_log_sink_name}\"",
+                  "filter": "metric.type=\"logging.googleapis.com/exports/log_entry_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\"",
                   "aggregation": {
                     "alignmentPeriod": "60s",
                     "perSeriesAligner": "ALIGN_RATE"
@@ -298,7 +145,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                   }
                 }
               },
-              "plotType": "STACKED_BAR",
+              "plotType": "LINE",
               "minAlignmentPeriod": "60s"
             }
           ],
@@ -313,48 +160,222 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         }
       },
       {
-        "title": "Log Sink Exported Volume",
+        "title": "Output Throughput to Splunk (EPS)",
         "xyChart": {
+          "chartOptions": {
+            "mode": "COLOR"
+          },
           "dataSets": [
             {
+              "plotType": "LINE",
+              "targetAxis": "Y1",
               "timeSeriesQuery": {
-                "timeSeriesFilter": {
-                  "filter": "metric.type=\"logging.googleapis.com/exports/byte_count\" resource.type=\"logging_sink\"  resource.label.\"name\"=\"${local.project_log_sink_name}\"",
-                  "aggregation": {
-                    "alignmentPeriod": "60s",
-                    "perSeriesAligner": "ALIGN_RATE"
-                  }
-                }
-              },
-              "plotType": "STACKED_BAR",
-              "minAlignmentPeriod": "60s"
+                "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter (resource.job_name =='${local.dataflow_main_job_name}')\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| align rate(1m)\n| every 1m"
+              }
             }
           ],
           "timeshiftDuration": "0s",
           "yAxis": {
             "label": "y1Axis",
             "scale": "LINEAR"
-          },
-          "chartOptions": {
-            "mode": "COLOR"
           }
         }
       },
       {
-        "title": "Log Sink Error Count",
+        "title": "Current Logs in Deadletter",
         "scorecard": {
           "timeSeriesQuery": {
             "timeSeriesFilter": {
-              "filter": "metric.type=\"logging.googleapis.com/exports/error_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\"",
+              "filter": "metric.type=\"pubsub.googleapis.com/subscription/num_undelivered_messages\" resource.type=\"pubsub_subscription\" resource.label.\"subscription_id\"=monitoring.regex.full_match(\"${local.dataflow_output_deadletter_sub_name}\")",
               "aggregation": {
                 "alignmentPeriod": "60s",
-                "perSeriesAligner": "ALIGN_SUM",
+                "perSeriesAligner": "ALIGN_NEXT_OLDER",
                 "crossSeriesReducer": "REDUCE_SUM"
               }
             }
           },
           "sparkChartView": {
             "sparkChartType": "SPARK_LINE"
+          },
+          "thresholds": [
+            {
+              "value": 100,
+              "color": "RED",
+              "direction": "ABOVE"
+            },
+            {
+              "value": 0,
+              "color": "YELLOW",
+              "direction": "ABOVE"
+            }
+          ]
+        }
+      },
+      {
+        "title": "Splunk HEC - Errors",
+        "xyChart": {
+          "chartOptions": {
+            "mode": "COLOR"
+          },
+          "dataSets": [
+            {
+              "plotType": "STACKED_BAR",
+              "targetAxis": "Y1",
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/http-server-error-requests'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+              }
+            }
+          ],
+          "timeshiftDuration": "0s",
+          "yAxis": {
+            "label": "y1Axis",
+            "scale": "LINEAR"
+          }
+        }
+      },
+      {
+        "title": "Splunk HEC - Avg Batch Size (All-time)",
+        "scorecard": {
+          "sparkChartView": {
+            "sparkChartType": "SPARK_LINE"
+          },
+          "timeSeriesQuery": {
+            "apiSource": "DEFAULT_CLOUD",
+            "timeSeriesFilter": {
+              "aggregation": {
+                "alignmentPeriod": "60s",
+                "crossSeriesReducer": "REDUCE_MEAN",
+                "perSeriesAligner": "ALIGN_MEAN"
+              },
+              "filter": "metric.type=\"custom.googleapis.com/dataflow/write_to_splunk_batch_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
+            }
+          }
+        }
+      },
+      {
+        "title": "Splunk HEC - Avg Latency (ms) (All-time)",
+        "scorecard": {
+          "sparkChartView": {
+            "sparkChartType": "SPARK_LINE"
+          },
+          "thresholds": [
+            {
+              "color": "RED",
+              "direction": "ABOVE",
+              "label": "",
+              "value": 2000
+            },
+            {
+              "color": "YELLOW",
+              "direction": "ABOVE",
+              "label": "",
+              "value": 500
+            }
+          ],
+          "timeSeriesQuery": {
+            "apiSource": "DEFAULT_CLOUD",
+            "timeSeriesFilter": {
+              "aggregation": {
+                "alignmentPeriod": "60s",
+                "crossSeriesReducer": "REDUCE_MEAN",
+                "perSeriesAligner": "ALIGN_MEAN"
+              },
+              "filter": "metric.type=\"custom.googleapis.com/dataflow/successful_write_to_splunk_latency_ms_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
+            }
+          }
+        }
+      },
+      {
+        "title": "Total Messages Exported (All-time)",
+        "scorecard": {
+          "timeSeriesQuery": {
+            "timeSeriesFilter": {
+              "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
+              "aggregation": {
+                "alignmentPeriod": "60s",
+                "crossSeriesReducer": "REDUCE_MAX",
+                "perSeriesAligner": "ALIGN_MAX"
+              }
+            }
+          },
+          "sparkChartView": {
+            "sparkChartType": "SPARK_BAR"
+          }
+        }
+      },
+      {
+        "title": "Total Messages Failed",
+        "xyChart": {
+          "dataSets": [
+            {
+              "plotType": "LINE",
+              "targetAxis": "Y1",
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/total-failed-messages'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+              }
+            }
+          ],
+          "timeshiftDuration": "0s",
+          "yAxis": {
+            "label": "y1Axis",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Total Messages Replayed",
+        "xyChart": {
+          "dataSets": [
+            {
+              "plotType": "LINE",
+              "targetAxis": "Y1",
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_replay_job_name}\"\n| metric 'dataflow.googleapis.com/job/elements_produced_count'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+              }
+            }
+          ],
+          "timeshiftDuration": "0s",
+          "yAxis": {
+            "label": "y1Axis",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+
+      {
+        "title": "Log Sink Error",
+        "xyChart": {
+          "chartOptions": {
+            "mode": "COLOR"
+          },
+          "dataSets": [
+            {
+              "minAlignmentPeriod": "60s",
+              "plotType": "STACKED_BAR",
+              "targetAxis": "Y1",
+              "timeSeriesQuery": {
+                "apiSource": "DEFAULT_CLOUD",
+                "timeSeriesFilter": {
+                  "aggregation": {
+                    "alignmentPeriod": "60s",
+                    "crossSeriesReducer": "REDUCE_NONE",
+                    "perSeriesAligner": "ALIGN_SUM"
+                  },
+                  "filter": "metric.type=\"logging.googleapis.com/exports/error_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\""
+                }
+              }
+            }
+          ],
+          "timeshiftDuration": "0s",
+          "yAxis": {
+            "label": "y1Axis",
+            "scale": "LINEAR"
           }
         }
       },
@@ -549,6 +570,24 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
           "chartOptions": {
             "mode": "COLOR"
           }
+        }
+      },
+      {
+        "title": "Dataflow worker - Error logs",
+        "logsPanel": {
+          "filter": "resource.type=\"dataflow_step\"\nlog_id(\"dataflow.googleapis.com/worker\")\nseverity=ERROR",
+          "resourceNames": [
+            "projects/798413660424"
+          ]
+        }
+      },
+      {
+        "title": "Dataflow worker - UDF debug logs",
+        "logsPanel": {
+          "filter": "resource.type=\"dataflow_step\"\nlog_id(\"dataflow.googleapis.com/worker\")\njsonPayload.logger=\"System.out\"",
+          "resourceNames": [
+            "projects/798413660424"
+          ]
         }
       }
     ]
