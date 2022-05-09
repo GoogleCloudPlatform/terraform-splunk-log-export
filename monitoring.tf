@@ -134,16 +134,16 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
               }
             },
             "sparkChartView": {
-              "sparkChartType": "SPARK_BAR"
+              "sparkChartType": "SPARK_LINE"
             },
             "thresholds": [
               {
-                "value": 10000,
+                "value": 1000,
                 "color": "RED",
                 "direction": "ABOVE"
               },
               {
-                "value": 1000,
+                "value": 100,
                 "color": "YELLOW",
                 "direction": "ABOVE"
               }
@@ -255,11 +255,11 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 3,
-        "width": 4,
-        "xPos": 8,
+        "width": 3,
+        "xPos": 9,
         "yPos": 12,
         "widget": {
-          "title": "Splunk HEC - Errors",
+          "title": "Splunk HEC - Server Errors",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -283,8 +283,37 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 3,
-        "width": 4,
-        "xPos": 4,
+        "width": 3,
+        "xPos": 6,
+        "yPos": 12,
+        "widget": {
+          "title": "Splunk HEC - Client Errors",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "STACKED_BAR",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/http-invalid-requests'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        }
+      },
+      {
+        "height": 3,
+        "width": 3,
+        "xPos": 3,
         "yPos": 12,
         "widget": {
           "title": "Splunk HEC - Avg Batch Size (All-time)",
@@ -308,7 +337,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 3,
-        "width": 4,
+        "width": 3,
         "xPos": 0,
         "yPos": 12,
         "widget": {
