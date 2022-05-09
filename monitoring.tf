@@ -46,7 +46,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                   "crossSeriesReducer": "REDUCE_MAX",
                   "perSeriesAligner": "ALIGN_MAX"
                 },
-                "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"splunk-export-pipeline-main-3258\""
+                "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
               }
             }
           }
@@ -782,6 +782,18 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "width": 12,
         "xPos": 0,
         "yPos": 19
+      },
+      {
+        "height": 4,
+        "widget": {
+          "collapsibleGroup": {
+            "collapsed": false
+          },
+          "title": "Processed Messages"
+        },
+        "width": 12,
+        "xPos": 0,
+        "yPos": 15
       }
     ]
   }
