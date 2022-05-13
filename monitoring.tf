@@ -33,7 +33,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
     "tiles": [
       {
         "height": 2,
-        "width": 4,
+        "width": 3,
         "xPos": 0,
         "yPos": 1,
         "widget": {
@@ -54,20 +54,26 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 4,
-        "width": 4,
+        "width": 6,
         "xPos": 0,
         "yPos": 3,
         "widget": {
-          "title": "Log Sink Data Rate ",
+          "title": "Input Data Rate ",
           "xyChart": {
             "dataSets": [
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "metric.type=\"logging.googleapis.com/exports/byte_count\" resource.type=\"logging_sink\"  resource.label.\"name\"=\"${local.project_log_sink_name}\"",
+                    "filter": "metric.type=\"pubsub.googleapis.com/topic/byte_cost\" resource.type=\"pubsub_topic\"  resource.label.\"topic_id\"=\"${local.dataflow_input_topic_name}\"",
                     "aggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
+                    },
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
                 },
@@ -88,8 +94,8 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 4,
-        "width": 4,
-        "xPos": 4,
+        "width": 6,
+        "xPos": 6,
         "yPos": 3,
         "widget": {
           "title": "Logs Exported (Hourly)",
@@ -117,8 +123,8 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 2,
-        "width": 4,
-        "xPos": 4,
+        "width": 3,
+        "xPos": 6,
         "yPos": 1,
         "widget": {
           "title": "Backlog Size",
@@ -157,19 +163,21 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "xPos": 0,
         "yPos": 8,
         "widget": {
-          "title": "Input Throughput from Log Sink (EPS)",
+          "title": "Input Throughput from Log Sink(s) (EPS)",
           "xyChart": {
             "dataSets": [
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "metric.type=\"logging.googleapis.com/exports/log_entry_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\"",
+                    "filter": "metric.type=\"pubsub.googleapis.com/topic/send_message_operation_count\" resource.type=\"pubsub_topic\" resource.label.\"topic_id\"=\"${local.dataflow_input_topic_name}\"",
                     "aggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
                     },
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -219,8 +227,8 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 2,
-        "width": 4,
-        "xPos": 8,
+        "width": 3,
+        "xPos": 9,
         "yPos": 1,
         "widget": {
           "title": "Deadletter Queue Size",
@@ -259,7 +267,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "xPos": 9,
         "yPos": 12,
         "widget": {
-          "title": "Splunk HEC - Server Errors",
+          "title": "Splunk HEC - 5xx Errors",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -287,7 +295,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "xPos": 6,
         "yPos": 12,
         "widget": {
-          "title": "Splunk HEC - Client Errors",
+          "title": "Splunk HEC - 4xx or Network Errors",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -455,38 +463,19 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         }
       },
       {
-        "height": 4,
-        "width": 4,
-        "xPos": 8,
-        "yPos": 3,
+        "height": 2,
+        "width": 3,
+        "xPos": 3,
+        "yPos": 1,
         "widget": {
-          "title": "Log Sink Error",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
+          "title": "Current Throughput (EPS)",
+          "scorecard": {
+            "sparkChartView": {
+              "sparkChartType": "SPARK_LINE"
             },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "STACKED_BAR",
-                "targetAxis": "Y1",
-                "timeSeriesQuery": {
-                  "apiSource": "DEFAULT_CLOUD",
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
-                      "perSeriesAligner": "ALIGN_SUM"
-                    },
-                    "filter": "metric.type=\"logging.googleapis.com/exports/error_count\" resource.type=\"logging_sink\" resource.label.\"name\"=\"${local.project_log_sink_name}\""
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
+            "thresholds": [],
+            "timeSeriesQuery": {
+              "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter (resource.job_name =='${local.dataflow_main_job_name}')\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| align next_older(1m)\n| every 1m\n| adjacent_delta| align rate(1m)\n| every 1m\n"
             }
           }
         }
@@ -606,8 +595,8 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 4,
-        "width": 4,
-        "xPos": 4,
+        "width": 3,
+        "xPos": 3,
         "yPos": 23,
         "widget": {
           "title": "Dataflow Cores In Use",
@@ -645,7 +634,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 4,
-        "width": 4,
+        "width": 3,
         "xPos": 0,
         "yPos": 23,
         "widget": {
@@ -684,8 +673,8 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
       },
       {
         "height": 4,
-        "width": 4,
-        "xPos": 8,
+        "width": 3,
+        "xPos": 9,
         "yPos": 23,
         "widget": {
           "title": "Dataflow System Lag",
@@ -823,6 +812,49 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
         "width": 12,
         "xPos": 0,
         "yPos": 15
+      },
+      {
+        "height": 4,
+        "width": 3,
+        "xPos": 6,
+        "yPos": 23,
+        "widget": {
+          "title": "Cloud NAT Open connections",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "60s",
+                "plotType": "LINE",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    },
+                    "filter": "metric.type=\"router.googleapis.com/nat/open_connections\" resource.type=\"nat_gateway\" resource.label.\"gateway_name\"=\"${length(google_compute_router_nat.dataflow_nat) > 0 ? google_compute_router_nat.dataflow_nat[0].name : ""}\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
+                  }
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        }
       }
     ]
   }
