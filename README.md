@@ -1,17 +1,13 @@
 # Terraform templates for Google Cloud log export to Splunk
 
 Terraform scripts for deploying log export to Splunk per Google Cloud reference guide
-"[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)", along with an optional Cloud Monitoring custom dashboard to monitor operations (sample screenshot below).
+"[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)", along with an optional [Cloud Monitoring custom dashboard](#monitoring-dashboard-batteries-included) to monitor export operations.
 
 These deployment templates are provided as is, without warranty. See [Copyright & License](#copyright-&-license) below.
 
 ### Architecture Diagram
 
 ![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
-
-### Monitoring Dashboard Example
-
-![Ops Dashboard of Log Export to Splunk](./images/logging_export_ops_dashboard.png)
 
 ### Configurable Parameters
 
@@ -36,6 +32,11 @@ dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL 
 dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
 dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
 dataflow_template_version | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'
+
+### Monitoring Dashboard (Batteries Included)
+
+Deployment templates include an optional Cloud Monitoring custom dashboard to monitor your log export operations:
+![Ops Dashboard of Log Export to Splunk](./images/logging_export_ops_dashboard.png)
 
 ### Getting Started
 
