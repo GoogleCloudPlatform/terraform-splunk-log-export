@@ -1,13 +1,17 @@
 # Terraform templates for Google Cloud log export to Splunk
 
-Terraform scripts for deploying log export to Splunk per Google Cloud reference guide:<br>
-[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow).
+Terraform scripts for deploying log export to Splunk per Google Cloud reference guide
+"[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)", along with an optional Cloud Monitoring custom dashboard to monitor operations (sample screenshot below).
 
 These deployment templates are provided as is, without warranty. See [Copyright & License](#copyright-&-license) below.
 
 ### Architecture Diagram
 
 ![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
+
+### Monitoring Dashboard Example
+
+![Ops Dashboard of Log Export to Splunk](./images/logging_export_ops_dashboard.png)
 
 ### Configurable Parameters
 
