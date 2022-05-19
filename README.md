@@ -45,6 +45,7 @@ Deployment templates include an optional Cloud Monitoring custom dashboard to mo
 
 #### Requirements
 * Terraform 0.13+
+* Splunk Dataflow template 2022-04-25-00_RC00 or later
 
 #### Enabling APIs
 Before deploying the Terraform in a Google Cloud Platform Project, the following APIs must be enabled:

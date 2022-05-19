@@ -56,6 +56,8 @@ locals {
 
   # dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
+  dataflow_job_enable_batch_logs = false
+  dataflow_job_enable_gzip_http_compression = true
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {

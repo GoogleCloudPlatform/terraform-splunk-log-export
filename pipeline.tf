@@ -57,6 +57,8 @@ resource "google_dataflow_job" "dataflow_job" {
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
+    enableBatchLogs = local.dataflow_job_enable_batch_logs                          # Supported as of 2022-03-21-00_RC01
+    enableGzipHttpCompression = local.dataflow_job_enable_gzip_http_compression     # Supported as of 2022-04-25-00_RC00
   },
     (var.dataflow_job_udf_gcs_path != "" && var.dataflow_job_udf_function_name != "") ?
     {
