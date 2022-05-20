@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project = ""
-region = ""
+project = "[MY_PROJECT]"
+region = "[MY_REGION]"
 
 create_network = false
 network = ""
@@ -28,14 +28,15 @@ splunk_hec_url = ""
 splunk_hec_token = ""
 
 # Dataflow job parameters
-dataflow_job_name = ""
-dataflow_job_machine_type = ""
-dataflow_job_machine_count = ""
-dataflow_job_parallelism = ""
-dataflow_job_batch_count = ""
-dataflow_job_disable_certificate_validation = ""
+dataflow_worker_service_account = "export-pipeline-worker"
+dataflow_job_name = "export-pipeline"
+dataflow_job_machine_type = "n1-standard-4"
+dataflow_job_machine_count = 2
+dataflow_job_parallelism = 16
+dataflow_job_batch_count = 10
+dataflow_job_disable_certificate_validation = false
 dataflow_job_udf_gcs_path = ""
 dataflow_job_udf_function_name = ""
 
 # Dashboard parameters
-workspace = ""
+workspace = "[MY_PROJECT]"
