@@ -42,10 +42,17 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
   bucket = google_storage_bucket.dataflow_job_temp_bucket.name
 }
 
+resource "google_service_account" "dataflow_worker_service_account" {
+  count = (var.dataflow_worker_service_account != "") ? 1 : 0
+  account_id = var.dataflow_worker_service_account
+  display_name =  "Dataflow worker service account to execute pipeline operations"
+}
+
 resource "google_dataflow_job" "dataflow_job" {
   name = local.dataflow_main_job_name
   template_gcs_path = local.dataflow_splunk_template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
+  service_account_email = local.dataflow_worker_service_account
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count
   parameters = merge({
@@ -57,6 +64,8 @@ resource "google_dataflow_job" "dataflow_job" {
     batchCount = var.dataflow_job_batch_count
     includePubsubMessage = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
+    enableBatchLogs = local.dataflow_job_enable_batch_logs                          # Supported as of 2022-03-21-00_RC01
+    enableGzipHttpCompression = local.dataflow_job_enable_gzip_http_compression     # Supported as of 2022-04-25-00_RC00
   },
     (var.dataflow_job_udf_gcs_path != "" && var.dataflow_job_udf_function_name != "") ?
     {

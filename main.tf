@@ -21,6 +21,10 @@ provider "google" {
   region  = var.region
 }
 
+data "google_project" "project" {}
+
+data "google_client_openid_userinfo" "provider_identity" {}
+
 # Generate new random hex to be used for bucket name
 resource "random_id" "bucket_suffix" {
   byte_length = 4
@@ -42,6 +46,12 @@ locals {
   dataflow_splunk_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
   dataflow_pubsub_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Cloud_PubSub"
 
+  # If provided, set Dataflow worker to new user-managed service account;
+  # otherwise, use Compute Engine default service account
+  dataflow_worker_service_account = ((var.dataflow_worker_service_account != "")
+    ? "${var.dataflow_worker_service_account}"
+    : "${data.google_project.project.number}-compute@developer.gserviceaccount.com")
+
   subnet_name = coalesce(var.subnet, "${var.network}-${var.region}")
   project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
   organization_log_sink_name = "${var.dataflow_job_name}-organization-log-sink"
@@ -56,6 +66,8 @@ locals {
 
   # dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
+  dataflow_job_enable_batch_logs = false
+  dataflow_job_enable_gzip_http_compression = true
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {
@@ -92,15 +104,6 @@ resource "google_logging_project_sink" "project_log_sink" {
 #
 #   include_children = "true"
 # }
-
-resource "google_pubsub_topic_iam_binding" "pubsub_iam_binding" {
-  project = google_pubsub_topic.dataflow_input_pubsub_topic.project
-  topic = google_pubsub_topic.dataflow_input_pubsub_topic.name
-  role = "roles/pubsub.publisher"
-  members = [
-    google_logging_project_sink.project_log_sink.writer_identity,
-  ]
-}
 
 output "dataflow_job_id" {
     value = google_dataflow_job.dataflow_job.job_id
