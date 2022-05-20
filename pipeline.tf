@@ -42,10 +42,17 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
   bucket = google_storage_bucket.dataflow_job_temp_bucket.name
 }
 
+resource "google_service_account" "dataflow_worker_service_account" {
+  count = (var.dataflow_worker_service_account != "") ? 1 : 0
+  account_id = var.dataflow_worker_service_account
+  display_name =  "Dataflow worker service account to execute pipeline operations"
+}
+
 resource "google_dataflow_job" "dataflow_job" {
   name = local.dataflow_main_job_name
   template_gcs_path = local.dataflow_splunk_template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
+  service_account_email = local.dataflow_worker_service_account
   machine_type = var.dataflow_job_machine_type
   max_workers = var.dataflow_job_machine_count
   parameters = merge({

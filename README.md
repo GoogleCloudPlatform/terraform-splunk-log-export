@@ -35,6 +35,7 @@ dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL 
 dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
 dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
 dataflow_template_version | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'
+dataflow_worker_service_account | (Optional) Name of worker service account to be created and used to execute job operations. Must be 6-30 characters long, and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])`. See [`account_id`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account#account_id) for more details on expected format. If parameter is empty, worker service account defaults to project's Compute Engine default service account.
 
 ### Monitoring Dashboard (Batteries Included)
 
@@ -54,6 +55,22 @@ Before deploying the Terraform in a Google Cloud Platform Project, the following
 
 For information on enabling Google Cloud Platform APIs, please see [Getting Started: Enabling APIs](https://cloud.google.com/apis/docs/getting-started#enabling_apis).
 
+#### Permissions required
+
+At a minimum, you must have the following roles before you deploy the resources in this Terraform:
+- Logs Configuration Writer (`roles/logging.configWriter`) at the project level (and optionally organization-level)
+- Compute Network Admin (`roles/compute.networkAdmin`) at the project level
+- Compute Security Admin (`roles/compute.securityAdmin`) at the project level
+- Dataflow Admin (`roles/dataflow.admin`) at the project level
+- Pub/Sub Admin (`roles/pubsub.admin`) at the project level
+- Storage Admin (`roles/storage.admin`) at the project level
+
+To ensure proper pipeline operation, Terraform creates necessary IAM bindings at the resource level as part of this deployment to grant access between newly created resources. For example, Log sink writer is granted Pub/Sub Publisher role over the input topic which aggregates all the logs, and Dataflow worker service account is granted both Pub/Sub subscriber over the inupt subscription, and Pub/Sub Publisher role over the deadletter topic.
+
+**Note about Dataflow permissions**: You must have permission to impersonate Dataflow worker service account (which executes pipeline operations) in order to attach that service account to Compute Engine VMs.  In case of default worker service account (i.e. Compute Engine default service account), ensure you have `iam.serviceAccounts.actAs` permission over your project's Compute Engine default service account. For security purposes, this Terraform does not modify access to that existing Compute Engine's default service account due to potentially inheriting broad permissions. On the other hand, if you choose to use a user-managed worker service account (by setting `dataflow_worker_service_account` template parameter), Terraform will add necessary permission over the service account. The former approach, that is the user-managed service account, is recommended in order to use a minimally-scoped service account dedicated for this pipeline, where permissions to impersonate are also managed for you in this Terraform.
+
+See [Security and permissions for pipelines](https://cloud.google.com/dataflow/docs/concepts/security-and-permissions#security_and_permissions_for_pipelines_on) to learn more about managing Dataflow permissions.
+ 
 #### Setup working directory
 
 1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.

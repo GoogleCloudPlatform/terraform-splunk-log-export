@@ -78,6 +78,18 @@ variable "dataflow_template_version" {
   default     = "latest"
 }
 
+variable "dataflow_worker_service_account" {
+  type        = string
+  description = "(Optional) Name of worker service account to be created and used to execute job operations. Must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If parameter is empty, worker service account defaults to project's Compute Engine default service account."
+  default     = ""
+
+  validation {
+    condition = (var.dataflow_worker_service_account == "" ||
+                can(regex("[a-z]([-a-z0-9]*[a-z0-9]", var.dataflow_worker_service_account)))
+    error_message = "Dataflow worker service account id must match the regular expression [a-z]([-a-z0-9]*[a-z0-9])."
+  }
+}
+
 variable "dataflow_job_name" {
   description = "Dataflow job name. No spaces"
 }
