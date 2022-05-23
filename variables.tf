@@ -85,7 +85,7 @@ variable "dataflow_worker_service_account" {
 
   validation {
     condition = (var.dataflow_worker_service_account == "" ||
-                can(regex("[a-z]([-a-z0-9]*[a-z0-9]", var.dataflow_worker_service_account)))
+                can(regex("[a-z]([-a-z0-9]*[a-z0-9])", var.dataflow_worker_service_account)))
     error_message = "Dataflow worker service account id must match the regular expression [a-z]([-a-z0-9]*[a-z0-9])."
   }
 }
