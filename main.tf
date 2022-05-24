@@ -49,7 +49,7 @@ locals {
   # If provided, set Dataflow worker to new user-managed service account;
   # otherwise, use Compute Engine default service account
   dataflow_worker_service_account = ((var.dataflow_worker_service_account != "")
-    ? "${var.dataflow_worker_service_account}"
+    ? "${var.dataflow_worker_service_account}@${var.project}.iam.gserviceaccount.com"
     : "${data.google_project.project.number}-compute@developer.gserviceaccount.com")
 
   subnet_name = coalesce(var.subnet, "${var.network}-${var.region}")
