@@ -64,10 +64,13 @@ locals {
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
   dataflow_output_deadletter_sub_name = "${var.dataflow_job_name}-deadletter-subscription"
 
-  # dataflow job parameters (not externalized for this project)
+  # Dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message = true
   dataflow_job_enable_batch_logs = false
   dataflow_job_enable_gzip_http_compression = true
+
+  # Metrics scope for Monitoring dashboard defaults to project unless explicitly provided
+  scoping_project = (var.scoping_project != "") ? var.scoping_project : var.project
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {
@@ -118,5 +121,5 @@ output "dataflow_output_deadletter_subscription" {
 }
 
 output "dataflow_log_export_dashboard" {
-    value = var.workspace != "" ? google_monitoring_dashboard.splunk-export-pipeline-dashboard[0].id : ""
+    value = google_monitoring_dashboard.splunk-export-pipeline-dashboard.id
 }

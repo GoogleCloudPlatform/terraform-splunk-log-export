@@ -39,4 +39,4 @@ dataflow_job_udf_gcs_path = ""
 dataflow_job_udf_function_name = ""
 
 # Dashboard parameters
-workspace = "[MY_PROJECT]"
+scoping_project = "[MY_PROJECT]"

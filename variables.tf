@@ -43,8 +43,8 @@ variable "primary_subnet_cidr" {
 
 # Dashboard parameters
 
-variable "workspace" {
-  description = "Cloud Monitoring Workspace to create dashboard under. This assumes Workspace is already created and project provided is already added to it. If parameter is empty, no dashboard will be created"
+variable "scoping_project" {
+  description = "Cloud Monitoring scoping project to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the service project. If parameter is empty, scoping project defaults to service project where dataflow job is running."
   default = ""
 }
 

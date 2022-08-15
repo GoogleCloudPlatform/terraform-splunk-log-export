@@ -22,7 +22,7 @@ create\_network | Boolean value specifying if a new network needs to be created.
 network | Network to deploy into
 subnet | Subnet to deploy into. This is **required** when deploying into existing network (`create_network=false`) like a Shared VPC.
 primary\_subnet\_cidr | The CIDR Range of the primary subnet.
-workspace | (Optional) Workspace to create Monitoring dashboard in. This assumes Workspace is already created and project is already added to it. If not specified, no dashboard will be created
+scoping_project | Cloud Monitoring scoping project ID to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed. See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project. If parameter is empty, scoping project defaults to value of `project` parameter above.
 log_filter | Log filter to use when exporting logs
 splunk_hec_url | Splunk HEC URL to stream data to, e.g. https://[MY_SPLUNK_IP_OR_FQDN]:8088
 splunk_hec_token | Splunk HEC token
@@ -88,7 +88,7 @@ $ terraform plan
 $ terraform apply
 ```
 
-#### View log export monitoring dashboard (applicable if Monitoring Workspace parameter was provided)
+#### View log export monitoring dashboard
 
  1. Retrieve dashboard id from terraform output
 ```shell

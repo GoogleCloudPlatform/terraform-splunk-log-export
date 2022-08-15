@@ -13,18 +13,14 @@
 # limitations under the License.
 
 resource "google_monitoring_group" "splunk-export-pipeline-group" {
-  count  = var.workspace != "" ? 1 : 0
-
   display_name = "Splunk Log Export Group"
-  project = var.workspace
+  project = local.scoping_project
 
   filter = "resource.metadata.name=starts_with(\"${var.dataflow_job_name}\")"
 }
 
 resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
-  count  = var.workspace != "" ? 1 : 0
-
-  project = var.workspace
+  project = local.scoping_project
   dashboard_json = <<EOF
 {
   "displayName": "Splunk Log Export Ops",
