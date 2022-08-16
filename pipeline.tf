@@ -78,6 +78,7 @@ resource "google_dataflow_job" "dataflow_job" {
   ip_configuration = "WORKER_IP_PRIVATE"
 
   depends_on = [
-    google_compute_subnetwork.splunk_subnet
+    google_compute_subnetwork.splunk_subnet,
+    google_storage_bucket_object.dataflow_job_temp_object
   ]
 }

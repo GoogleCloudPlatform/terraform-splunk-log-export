@@ -23,6 +23,19 @@ resource "google_compute_subnetwork" "splunk_subnet" {
 
 }
 
+# Create DNS policy that enables logging of DNS queries in new network
+resource "google_dns_policy" "splunk_network_dns_policy" {
+  count = var.create_network == true ? 1 : 0
+
+  name           = "${var.network}-dns-policy"
+
+  enable_logging = true
+
+  networks {
+    network_url =  google_compute_network.splunk_export[count.index].id
+  }
+}
+
 resource "google_compute_router" "dataflow_to_splunk_router" {
   count = var.create_network == true ? 1 : 0
 
