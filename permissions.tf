@@ -30,6 +30,15 @@ resource "google_pubsub_subscription_iam_binding" "input_sub_subscriber" {
   ]
 }
 
+resource "google_pubsub_subscription_iam_binding" "input_sub_viewer" {
+  project = google_pubsub_subscription.dataflow_input_pubsub_subscription.project
+  subscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.name
+  role = "roles/pubsub.viewer"
+  members = [
+    "serviceAccount:${local.dataflow_worker_service_account}"
+  ]
+}
+
 resource "google_pubsub_topic_iam_binding" "deadletter_topic_publisher" {
   project = google_pubsub_topic.dataflow_deadletter_pubsub_topic.project
   topic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
