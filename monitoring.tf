@@ -42,7 +42,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                   "crossSeriesReducer": "REDUCE_MAX",
                   "perSeriesAligner": "ALIGN_MAX"
                 },
-                "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
+                "filter": "metric.type=\"dataflow.googleapis.com/job/user_counter\" metric.label.\"metric_name\"=\"outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
               }
             }
           }
@@ -104,7 +104,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                 "plotType": "STACKED_BAR",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
-                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| filter (resource.job_name == '${local.dataflow_main_job_name}')\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| group_by 60m, sum(val())\n"
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n| filter metric.metric_name='outbound-successful-events' && (resource.job_name == '${local.dataflow_main_job_name}')\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| group_by 60m, sum(val())\n"
                 }
               }
             ],
@@ -209,7 +209,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
-                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter (resource.job_name =='${local.dataflow_main_job_name}')\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| align rate(1m)\n| every 1m"
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n| filter metric.metric_name=='outbound-successful-events' && (resource.job_name =='${local.dataflow_main_job_name}')\n| align next_older(1m)\n| every 1m\n| adjacent_delta\n| align rate(1m)\n| every 1m"
                 }
               }
             ],
@@ -273,7 +273,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                 "plotType": "STACKED_BAR",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
-                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/http-server-error-requests'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n| filter metric.metric_name=='http-server-error-requests' && (resource.job_name==\"${local.dataflow_main_job_name}\")\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
                 }
               }
             ],
@@ -301,7 +301,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                 "plotType": "STACKED_BAR",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
-                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/http-invalid-requests'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n| filter metric.metric_name=='http-invalid-requests' && (resource.job_name =\"${local.dataflow_main_job_name}\")\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
                 }
               }
             ],
@@ -333,7 +333,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                   "crossSeriesReducer": "REDUCE_MEAN",
                   "perSeriesAligner": "ALIGN_MEAN"
                 },
-                "filter": "metric.type=\"custom.googleapis.com/dataflow/write_to_splunk_batch_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
+                "filter": "metric.type=\"dataflow.googleapis.com/job/user_counter\" metric.label.\"metric_name\"=\"write_to_splunk_batch_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
               }
             }
           }
@@ -372,7 +372,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                   "crossSeriesReducer": "REDUCE_MEAN",
                   "perSeriesAligner": "ALIGN_MEAN"
                 },
-                "filter": "metric.type=\"custom.googleapis.com/dataflow/successful_write_to_splunk_latency_ms_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
+                "filter": "metric.type=\"dataflow.googleapis.com/job/user_counter\" metric.label.\"metric_name\"=\"successful_write_to_splunk_latency_ms_MEAN\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\""
               }
             }
           }
@@ -388,7 +388,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
           "scorecard": {
             "timeSeriesQuery": {
               "timeSeriesFilter": {
-                "filter": "metric.type=\"custom.googleapis.com/dataflow/outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
+                "filter": "metric.type=\"dataflow.googleapis.com/job/user_counter\" metric.label.\"metric_name\"=\"outbound-successful-events\" resource.type=\"dataflow_job\" resource.label.\"job_name\"=\"${local.dataflow_main_job_name}\"",
                 "aggregation": {
                   "alignmentPeriod": "60s",
                   "crossSeriesReducer": "REDUCE_MAX",
@@ -415,7 +415,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
-                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter resource.job_name =\"${local.dataflow_main_job_name}\"\n| metric 'custom.googleapis.com/dataflow/total-failed-messages'\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
+                  "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n| filter metric.metric_name=='total-failed-messages'&& (resource.job_name =\"${local.dataflow_main_job_name}\")\n| align next_older(1m)\n| every 1m\n| adjacent_delta"
                 }
               }
             ],
@@ -471,7 +471,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             },
             "thresholds": [],
             "timeSeriesQuery": {
-              "timeSeriesQueryLanguage": "fetch dataflow_job\n| filter (resource.job_name =='${local.dataflow_main_job_name}')\n| metric 'custom.googleapis.com/dataflow/outbound-successful-events'\n| align next_older(1m)\n| every 1m\n| adjacent_delta| align rate(1m)\n| every 1m\n"
+              "timeSeriesQueryLanguage": "fetch dataflow_job\n| metric 'dataflow.googleapis.com/job/user_counter'\n|  filter metric.metric_name=='outbound-successful-events' && (resource.job_name =='${local.dataflow_main_job_name}')\n| align next_older(1m)\n| every 1m\n| adjacent_delta| align rate(1m)\n| every 1m\n"
             }
           }
         }
