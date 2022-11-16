@@ -14,12 +14,12 @@
 
 variable "project" {
   type        = string
-  description = "Project for Dataflow job deployment"
+  description = "Project ID to deploy resources in"
 }
 
 variable "region" {
   type        = string
-  description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC)"
+  description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below"
 }
 
 variable "create_network" {
@@ -35,7 +35,7 @@ variable "network" {
 
 variable "subnet" {
   type        = string
-  description = "Subnet to deploy into. This is required when deploying into existing network (e.g. Shared VPC)"
+  description = "Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC)"
   default     = ""
 }
 
@@ -49,7 +49,12 @@ variable "primary_subnet_cidr" {
 
 variable "scoping_project" {
   type        = string
-  description = "Cloud Monitoring scoping project to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the service project. If parameter is empty, scoping project defaults to service project where dataflow job is running."
+  description = <<-EOF
+                Cloud Monitoring scoping project ID to create dashboard under.
+                This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.
+                See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.
+                If parameter is empty, scoping project defaults to value of `project` parameter above.
+                EOF
   default     = ""
 }
 
@@ -82,7 +87,7 @@ variable "splunk_hec_token" {
 
 variable "dataflow_template_version" {
   type        = string
-  description = "Dataflow template version for the replay job."
+  description = "(Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'"
   default     = "latest"
 }
 
@@ -105,42 +110,42 @@ variable "dataflow_job_name" {
 
 variable "dataflow_job_machine_type" {
   type        = string
-  description = "Dataflow job worker machine type"
+  description = "(Optional) Dataflow job worker machine type (default 'n1-standard-4')"
   default     = "n1-standard-4"
 }
 
 variable "dataflow_job_machine_count" {
-  description = "Dataflow job max worker count. Defaults to 2."
+  description = "(Optional) Dataflow job max worker count (default 2)"
   type        = number
   default     = 2
 }
 
 variable "dataflow_job_parallelism" {
-  description = "Maximum parallel requests to Splunk. Defaults to 8."
+  description = "(Optional) Maximum parallel requests to Splunk (default 8)"
   type        = number
   default     = 8
 }
 
 variable "dataflow_job_batch_count" {
-  description = "Batch count of messages in single request to Splunk. Defaults to 50."
+  description = "(Optional) Batch count of messages in single request to Splunk (default 50)"
   type        = number
   default     = 50
 }
 
 variable "dataflow_job_disable_certificate_validation" {
-  description = "Disable SSL certificate validation (default: false)"
+  description = "(Optional) Boolean to disable SSL certificate validation (default `false`)"
   type        = bool
   default     = false
 }
 
 variable "dataflow_job_udf_gcs_path" {
   type        = string
-  description = "[Optional Dataflow UDF] GCS path for JavaScript file (default: '')"
+  description = "(Optional) GCS path for JavaScript file (default No UDF used)"
   default     = ""
 }
 
 variable "dataflow_job_udf_function_name" {
   type        = string
-  description = "[Optional Dataflow UDF] Name of JavaScript function to be called (default: '')"
+  description = "(Optional) Name of JavaScript function to be called (default No UDF used)"
   default     = ""
 }
