@@ -27,12 +27,12 @@ resource "google_compute_subnetwork" "splunk_subnet" {
 resource "google_dns_policy" "splunk_network_dns_policy" {
   count = var.create_network == true ? 1 : 0
 
-  name           = "${var.network}-dns-policy"
+  name = "${var.network}-dns-policy"
 
   enable_logging = true
 
   networks {
-    network_url =  google_compute_network.splunk_export[count.index].id
+    network_url = google_compute_network.splunk_export[count.index].id
   }
 }
 
@@ -59,7 +59,7 @@ resource "google_compute_router_nat" "dataflow_nat" {
   region                             = google_compute_router.dataflow_to_splunk_router[count.index].region
   nat_ip_allocate_option             = "MANUAL_ONLY"
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  nat_ips                            = google_compute_address.dataflow_nat_ip_address.*.self_link
+  nat_ips                            = google_compute_address.dataflow_nat_ip_address[*].self_link
   min_ports_per_vm                   = 128
   subnetwork {
     name                    = google_compute_subnetwork.splunk_subnet[count.index].id

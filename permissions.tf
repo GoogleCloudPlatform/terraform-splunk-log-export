@@ -14,26 +14,26 @@
 
 resource "google_pubsub_topic_iam_binding" "input_sub_publisher" {
   project = google_pubsub_topic.dataflow_input_pubsub_topic.project
-  topic = google_pubsub_topic.dataflow_input_pubsub_topic.name
-  role = "roles/pubsub.publisher"
+  topic   = google_pubsub_topic.dataflow_input_pubsub_topic.name
+  role    = "roles/pubsub.publisher"
   members = [
     google_logging_project_sink.project_log_sink.writer_identity
   ]
 }
 
 resource "google_pubsub_subscription_iam_binding" "input_sub_subscriber" {
-  project = google_pubsub_subscription.dataflow_input_pubsub_subscription.project
+  project      = google_pubsub_subscription.dataflow_input_pubsub_subscription.project
   subscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.name
-  role = "roles/pubsub.subscriber"
+  role         = "roles/pubsub.subscriber"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
 }
 
 resource "google_pubsub_subscription_iam_binding" "input_sub_viewer" {
-  project = google_pubsub_subscription.dataflow_input_pubsub_subscription.project
+  project      = google_pubsub_subscription.dataflow_input_pubsub_subscription.project
   subscription = google_pubsub_subscription.dataflow_input_pubsub_subscription.name
-  role = "roles/pubsub.viewer"
+  role         = "roles/pubsub.viewer"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
@@ -41,8 +41,8 @@ resource "google_pubsub_subscription_iam_binding" "input_sub_viewer" {
 
 resource "google_pubsub_topic_iam_binding" "deadletter_topic_publisher" {
   project = google_pubsub_topic.dataflow_deadletter_pubsub_topic.project
-  topic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
-  role = "roles/pubsub.publisher"
+  topic   = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
+  role    = "roles/pubsub.publisher"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
@@ -50,7 +50,7 @@ resource "google_pubsub_topic_iam_binding" "deadletter_topic_publisher" {
 
 resource "google_storage_bucket_iam_binding" "dataflow_worker_bucket_access" {
   bucket = google_storage_bucket.dataflow_job_temp_bucket.name
-  role = "roles/storage.objectAdmin"
+  role   = "roles/storage.objectAdmin"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
@@ -58,7 +58,7 @@ resource "google_storage_bucket_iam_binding" "dataflow_worker_bucket_access" {
 
 resource "google_project_iam_binding" "dataflow_worker_role" {
   project = var.project
-  role = "roles/dataflow.worker"
+  role    = "roles/dataflow.worker"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
@@ -73,11 +73,11 @@ resource "google_project_iam_binding" "dataflow_worker_role" {
 # deployment will return an error. For security purposes, we do not modify access to existing
 # default Compute Engine service account
 resource "google_service_account_iam_binding" "terraform_caller_impersonate_dataflow_worker" {
-  count = (var.dataflow_worker_service_account != "") ? 1 : 0
+  count              = (var.dataflow_worker_service_account != "") ? 1 : 0
   service_account_id = google_service_account.dataflow_worker_service_account[0].id
-  role = "roles/iam.serviceAccountUser"
+  role               = "roles/iam.serviceAccountUser"
 
   members = [
-      "user:${data.google_client_openid_userinfo.provider_identity.email}"
+    "user:${data.google_client_openid_userinfo.provider_identity.email}"
   ]
 }
