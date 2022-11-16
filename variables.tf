@@ -93,10 +93,43 @@ variable "splunk_hec_url" {
   }
 }
 
+variable "splunk_hec_token_source" {
+  type        = string
+  default     = "PLAINTEXT"
+  description = "(Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT"
+
+  validation {
+    condition     = contains(["PLAINTEXT", "KMS", "SECRET_MANAGER"], var.splunk_hec_token_source)
+    error_message = "Valid values for var: dataflow_token_source are ('PLAINTEXT', 'KMS', 'SECRET_MANAGER')."
+  }
+}
+
 variable "splunk_hec_token" {
   type        = string
   description = "Splunk HEC token"
+  default     = ""
   sensitive   = true
+}
+
+variable "splunk_hec_token_encription_key" {
+  type        = string
+  description = "(Optional) The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS (default: '')"
+  default     = ""
+  validation {
+    condition     = (can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.splunk_hec_token_encription_key)))
+    error_message = "HEC token encryption key must match rex: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
+  }
+}
+
+# TODO: Make crooss variable validation once https://github.com/hashicorp/terraform/issues/25609 is resolved
+variable "splunk_hec_token_secret_id" {
+  type        = string
+  description = "(Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '')"
+  default     = ""
+  validation {
+    condition     = (can(regex("^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)))
+    error_message = "HEC token secret id key must match rex: '^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$' pattern."
+  }
 }
 
 # Dataflow job parameters

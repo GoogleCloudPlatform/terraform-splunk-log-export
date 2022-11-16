@@ -57,8 +57,34 @@ resource "google_storage_bucket_iam_binding" "dataflow_worker_bucket_access" {
 }
 
 resource "google_project_iam_binding" "dataflow_worker_role" {
+  count   = (var.dataflow_worker_service_account != "") ? 1 : 0
   project = var.project
   role    = "roles/dataflow.worker"
+  members = [
+    "serviceAccount:${local.dataflow_worker_service_account}"
+  ]
+}
+
+resource "google_secret_manager_secret_iam_binding" "dataflow_worker_role_read_secrets" {
+  # If dataflow service account provided than appropriate bindings should be done outside of the module
+  count = (var.splunk_hec_token_source == "SECRET_MANAGER" &&
+    var.splunk_hec_token_secret_id != "" &&
+  var.dataflow_worker_service_account == "") ? 1 : 0
+  project   = var.project
+  secret_id = var.splunk_hec_token_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  members = [
+    "serviceAccount:${local.dataflow_worker_service_account}"
+  ]
+}
+
+resource "google_kms_crypto_key_iam_binding" "decryptor_rights" {
+  # If dataflow service account provided than appropriate bindings should be done outside of the module
+  count = (var.splunk_hec_token_source == "KMS" &&
+    var.splunk_hec_token_encription_key != "" &&
+  var.dataflow_worker_service_account == "") ? 1 : 0
+  crypto_key_id = var.splunk_hec_token_encription_key
+  role          = "roles/cloudkms.cryptoKeyDecrypter"
   members = [
     "serviceAccount:${local.dataflow_worker_service_account}"
   ]
