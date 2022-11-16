@@ -14,12 +14,20 @@
 
 variable "project" {
   type        = string
+<<<<<<< HEAD
   description = "Project ID to deploy resources in"
+=======
+  description = "Project for Dataflow job deployment"
+>>>>>>> Applyind terraform format to all files
 }
 
 variable "region" {
   type        = string
+<<<<<<< HEAD
   description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below"
+=======
+  description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC)"
+>>>>>>> Applyind terraform format to all files
 }
 
 variable "create_network" {
@@ -35,7 +43,11 @@ variable "network" {
 
 variable "subnet" {
   type        = string
+<<<<<<< HEAD
   description = "Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC)"
+=======
+  description = "Subnet to deploy into. This is required when deploying into existing network (e.g. Shared VPC)"
+>>>>>>> Applyind terraform format to all files
   default     = ""
 }
 
@@ -49,12 +61,16 @@ variable "primary_subnet_cidr" {
 
 variable "scoping_project" {
   type        = string
+<<<<<<< HEAD
   description = <<-EOF
                 Cloud Monitoring scoping project ID to create dashboard under.
                 This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.
                 See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.
                 If parameter is empty, scoping project defaults to value of `project` parameter above.
                 EOF
+=======
+  description = "Cloud Monitoring scoping project to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the service project. If parameter is empty, scoping project defaults to service project where dataflow job is running."
+>>>>>>> Applyind terraform format to all files
   default     = ""
 }
 
