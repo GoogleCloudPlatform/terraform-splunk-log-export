@@ -19,6 +19,8 @@ content: |-
     ![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
     
     {{ .Inputs }}
+
+    {{ .Outputs }}
     
     ### Monitoring Dashboard (Batteries Included)
     

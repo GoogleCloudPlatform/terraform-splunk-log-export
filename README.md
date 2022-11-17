@@ -38,6 +38,15 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` |
 | <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` |
 
+#### Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_dataflow_input_topic"></a> [dataflow_input_topic](#output_dataflow_input_topic) | n/a |
+| <a name="output_dataflow_job_id"></a> [dataflow_job_id](#output_dataflow_job_id) | n/a |
+| <a name="output_dataflow_log_export_dashboard"></a> [dataflow_log_export_dashboard](#output_dataflow_log_export_dashboard) | n/a |
+| <a name="output_dataflow_output_deadletter_subscription"></a> [dataflow_output_deadletter_subscription](#output_dataflow_output_deadletter_subscription) | n/a |
+
 ### Monitoring Dashboard (Batteries Included)
 
 Deployment templates include an optional Cloud Monitoring custom dashboard to monitor your log export operations:
