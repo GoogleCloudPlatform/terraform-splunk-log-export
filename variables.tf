@@ -14,20 +14,12 @@
 
 variable "project" {
   type        = string
-<<<<<<< HEAD
   description = "Project ID to deploy resources in"
-=======
-  description = "Project for Dataflow job deployment"
->>>>>>> Applyind terraform format to all files
 }
 
 variable "region" {
   type        = string
-<<<<<<< HEAD
   description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below"
-=======
-  description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC)"
->>>>>>> Applyind terraform format to all files
 }
 
 variable "create_network" {
@@ -43,11 +35,7 @@ variable "network" {
 
 variable "subnet" {
   type        = string
-<<<<<<< HEAD
   description = "Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC)"
-=======
-  description = "Subnet to deploy into. This is required when deploying into existing network (e.g. Shared VPC)"
->>>>>>> Applyind terraform format to all files
   default     = ""
 }
 
@@ -61,16 +49,12 @@ variable "primary_subnet_cidr" {
 
 variable "scoping_project" {
   type        = string
-<<<<<<< HEAD
   description = <<-EOF
                 Cloud Monitoring scoping project ID to create dashboard under.
                 This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.
                 See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.
                 If parameter is empty, scoping project defaults to value of `project` parameter above.
                 EOF
-=======
-  description = "Cloud Monitoring scoping project to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the service project. If parameter is empty, scoping project defaults to service project where dataflow job is running."
->>>>>>> Applyind terraform format to all files
   default     = ""
 }
 
@@ -106,17 +90,17 @@ variable "splunk_hec_token_source" {
 
 variable "splunk_hec_token" {
   type        = string
-  description = "Splunk HEC token"
+  description = "(Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`."
   default     = ""
   sensitive   = true
 }
 
-variable "splunk_hec_token_encription_key" {
+variable "splunk_hec_token_kms_encryption_key" {
   type        = string
   description = "(Optional) The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS (default: '')"
   default     = ""
   validation {
-    condition     = (can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.splunk_hec_token_encription_key)))
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.splunk_hec_token_kms_encryption_key)) || var.splunk_hec_token_kms_encryption_key == ""
     error_message = "HEC token encryption key must match rex: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
   }
 }
@@ -127,7 +111,7 @@ variable "splunk_hec_token_secret_id" {
   description = "(Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '')"
   default     = ""
   validation {
-    condition     = (can(regex("^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)))
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)) || var.splunk_hec_token_secret_id == ""
     error_message = "HEC token secret id key must match rex: '^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$' pattern."
   }
 }

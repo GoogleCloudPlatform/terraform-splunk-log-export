@@ -22,6 +22,22 @@ use GitHub pull requests for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
 
+## Quality gates
+The project has several Quality gates.
+Make sure to run them localy before raising PR.
+1. Run [tflint](https://github.com/terraform-linters/tflint) with default settings 
+```
+tflint .
+```
+2. Run terraform format
+```
+terraform fmt .
+```
+3. Generate documentation with help of [terraform-docs](https://terraform-docs.io/)
+```
+terraform-docs .
+```
+
 ## Community Guidelines
 
 This project follows [Google's Open Source Community

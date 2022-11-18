@@ -79,7 +79,7 @@ resource "google_dataflow_job" "dataflow_job" {
     (var.splunk_hec_token_source == "KMS") ?
     {
       token                 = var.splunk_hec_token
-      tokenKMSEncryptionKey = var.splunk_hec_token_encription_key
+      tokenKMSEncryptionKey = var.splunk_hec_token_kms_encryption_key
     } : {},
     (var.splunk_hec_token_source == "SECRET_MANAGER") ?
     {
