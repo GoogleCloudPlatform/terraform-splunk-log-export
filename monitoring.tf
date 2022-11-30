@@ -14,13 +14,13 @@
 
 resource "google_monitoring_group" "splunk-export-pipeline-group" {
   display_name = "Splunk Log Export Group"
-  project = local.scoping_project
+  project      = local.scoping_project
 
   filter = "resource.metadata.name=starts_with(\"${var.dataflow_job_name}\")"
 }
 
 resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
-  project = local.scoping_project
+  project        = local.scoping_project
   dashboard_json = <<EOF
 {
   "displayName": "Splunk Log Export Ops",

@@ -13,10 +13,12 @@
 # limitations under the License.
 
 variable "project" {
+  type        = string
   description = "Project for Dataflow job deployment"
 }
 
 variable "region" {
+  type        = string
   description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC)"
 }
 
@@ -28,11 +30,13 @@ variable "create_network" {
 
 variable "network" {
   description = "Network to deploy into"
+  type        = string
 }
 
 variable "subnet" {
+  type        = string
   description = "Subnet to deploy into. This is required when deploying into existing network (e.g. Shared VPC)"
-  default = ""
+  default     = ""
 }
 
 variable "primary_subnet_cidr" {
@@ -44,30 +48,34 @@ variable "primary_subnet_cidr" {
 # Dashboard parameters
 
 variable "scoping_project" {
+  type        = string
   description = "Cloud Monitoring scoping project to create dashboard under. This assumes a pre-existing scoping project whose metrics scope contains the service project. If parameter is empty, scoping project defaults to service project where dataflow job is running."
-  default = ""
+  default     = ""
 }
 
 # Log sink details
 
 variable "log_filter" {
+  type        = string
   description = "Log filter to use when exporting logs"
 }
 
 # Dataflow job output
 
 variable "splunk_hec_url" {
+  type        = string
   description = "Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088"
-  
+
   validation {
-    condition = can(regex("https?://.*(:[0-9]+)?", var.splunk_hec_url))
+    condition     = can(regex("https?://.*(:[0-9]+)?", var.splunk_hec_url))
     error_message = "Splunk HEC url must of the form <protocol>://<host>:<port> ."
   }
 }
 
 variable "splunk_hec_token" {
+  type        = string
   description = "Splunk HEC token"
-  sensitive = true
+  sensitive   = true
 }
 
 # Dataflow job parameters
@@ -85,50 +93,54 @@ variable "dataflow_worker_service_account" {
 
   validation {
     condition = (var.dataflow_worker_service_account == "" ||
-                can(regex("[a-z]([-a-z0-9]*[a-z0-9])", var.dataflow_worker_service_account)))
+    can(regex("[a-z]([-a-z0-9]*[a-z0-9])", var.dataflow_worker_service_account)))
     error_message = "Dataflow worker service account id must match the regular expression [a-z]([-a-z0-9]*[a-z0-9])."
   }
 }
 
 variable "dataflow_job_name" {
+  type        = string
   description = "Dataflow job name. No spaces"
 }
 
 variable "dataflow_job_machine_type" {
+  type        = string
   description = "Dataflow job worker machine type"
-  default = "n1-standard-4"
+  default     = "n1-standard-4"
 }
 
 variable "dataflow_job_machine_count" {
   description = "Dataflow job max worker count. Defaults to 2."
-  type = number
-  default = 2
+  type        = number
+  default     = 2
 }
 
 variable "dataflow_job_parallelism" {
   description = "Maximum parallel requests to Splunk. Defaults to 8."
-  type = number
-  default = 8
+  type        = number
+  default     = 8
 }
 
 variable "dataflow_job_batch_count" {
   description = "Batch count of messages in single request to Splunk. Defaults to 50."
-  type = number
-  default = 50
+  type        = number
+  default     = 50
 }
 
 variable "dataflow_job_disable_certificate_validation" {
   description = "Disable SSL certificate validation (default: false)"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "dataflow_job_udf_gcs_path" {
+  type        = string
   description = "[Optional Dataflow UDF] GCS path for JavaScript file (default: '')"
-  default = ""
+  default     = ""
 }
 
 variable "dataflow_job_udf_function_name" {
+  type        = string
   description = "[Optional Dataflow UDF] Name of JavaScript function to be called (default: '')"
-  default = ""
+  default     = ""
 }
