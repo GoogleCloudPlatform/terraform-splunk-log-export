@@ -65,7 +65,6 @@ resource "google_project_iam_binding" "dataflow_worker_role" {
 }
 
 resource "google_secret_manager_secret_iam_member" "dataflow_worker_secret_access" {
-  # If dataflow service account provided than appropriate bindings should be done outside of the module
   count = (var.splunk_hec_token_source == "SECRET_MANAGER" &&
   var.splunk_hec_token_secret_id != "") ? 1 : 0
   project   = var.project
@@ -75,7 +74,6 @@ resource "google_secret_manager_secret_iam_member" "dataflow_worker_secret_acces
 }
 
 resource "google_kms_crypto_key_iam_member" "dataflow_worker_kms_access" {
-  # If dataflow service account provided than appropriate bindings should be done outside of the module
   count = (var.splunk_hec_token_source == "KMS" &&
   var.splunk_hec_token_kms_encryption_key != "") ? 1 : 0
   crypto_key_id = var.splunk_hec_token_kms_encryption_key

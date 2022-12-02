@@ -130,7 +130,7 @@ $ terraform destroy
 
 ### TODOs
 
-* Support KMS-encrypted HEC token
+* ~~Support KMS-encrypted HEC token~~
 * Expose logging level knob
 * ~~Create replay pipeline~~
 * ~~Create secure network for self-contained setup if existing network is not provided~~
@@ -141,7 +141,7 @@ $ terraform destroy
 
 * **Roy Arsan** - [rarsan](https://github.com/rarsan)
 * **Nick Predey** - [npredey](https://github.com/npredey)
-
+* **Igor Lakhtenkov** - [Lakhtenkov-iv](https://github.com/Lakhtenkov-iv)
 
 ### Copyright & License
 
