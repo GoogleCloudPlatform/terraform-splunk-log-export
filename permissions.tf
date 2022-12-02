@@ -64,6 +64,23 @@ resource "google_project_iam_binding" "dataflow_worker_role" {
   ]
 }
 
+resource "google_secret_manager_secret_iam_member" "dataflow_worker_secret_access" {
+  count = (var.splunk_hec_token_source == "SECRET_MANAGER" &&
+  var.splunk_hec_token_secret_id != "") ? 1 : 0
+  project   = var.project
+  secret_id = var.splunk_hec_token_secret_id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${local.dataflow_worker_service_account}"
+}
+
+resource "google_kms_crypto_key_iam_member" "dataflow_worker_kms_access" {
+  count = (var.splunk_hec_token_source == "KMS" &&
+  var.splunk_hec_token_kms_encryption_key != "") ? 1 : 0
+  crypto_key_id = var.splunk_hec_token_kms_encryption_key
+  role          = "roles/cloudkms.cryptoKeyDecrypter"
+  member        = "serviceAccount:${local.dataflow_worker_service_account}"
+}
+
 # To deploy Dataflow jobs, terraform caller identity must have permission to impersonate
 # worker service account in order to attach that service account to Compute Engine VMs.
 # In case of user-managed worker service account, add necessary permission over new service account,

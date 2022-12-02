@@ -13,30 +13,33 @@
 # limitations under the License.
 
 project = "[MY_PROJECT]"
-region = "[MY_REGION]"
+region  = "[MY_REGION]"
 
-create_network = false
-network = ""
-subnet = ""
+create_network      = false
+network             = ""
+subnet              = ""
 primary_subnet_cidr = "10.128.0.0/20"
 
 # Log sink details
 log_filter = ""
 
 # Dataflow job output
-splunk_hec_url = ""
-splunk_hec_token = ""
+splunk_hec_url                      = ""
+splunk_hec_token_source             = ""
+splunk_hec_token                    = ""
+splunk_hec_token_secret_id          = ""
+splunk_hec_token_kms_encryption_key = ""
 
 # Dataflow job parameters
-dataflow_worker_service_account = "export-pipeline-worker"
-dataflow_job_name = "export-pipeline"
-dataflow_job_machine_type = "n1-standard-4"
-dataflow_job_machine_count = 2
-dataflow_job_parallelism = 16
-dataflow_job_batch_count = 10
+dataflow_worker_service_account             = "export-pipeline-worker"
+dataflow_job_name                           = "export-pipeline"
+dataflow_job_machine_type                   = "n1-standard-4"
+dataflow_job_machine_count                  = 2
+dataflow_job_parallelism                    = 16
+dataflow_job_batch_count                    = 10
 dataflow_job_disable_certificate_validation = false
-dataflow_job_udf_gcs_path = ""
-dataflow_job_udf_function_name = ""
+dataflow_job_udf_gcs_path                   = ""
+dataflow_job_udf_function_name              = ""
 
 # Dashboard parameters
 scoping_project = "[MY_PROJECT]"

@@ -59,19 +59,33 @@ resource "google_dataflow_job" "dataflow_job" {
     inputSubscription            = google_pubsub_subscription.dataflow_input_pubsub_subscription.id
     outputDeadletterTopic        = google_pubsub_topic.dataflow_deadletter_pubsub_topic.id
     url                          = var.splunk_hec_url
-    token                        = var.splunk_hec_token
     parallelism                  = var.dataflow_job_parallelism
     batchCount                   = var.dataflow_job_batch_count
     includePubsubMessage         = local.dataflow_job_include_pubsub_message
     disableCertificateValidation = var.dataflow_job_disable_certificate_validation
     enableBatchLogs              = local.dataflow_job_enable_batch_logs            # Supported as of 2022-03-21-00_RC01
     enableGzipHttpCompression    = local.dataflow_job_enable_gzip_http_compression # Supported as of 2022-04-25-00_RC00
+    tokenSource                  = var.splunk_hec_token_source                     # Supported as of 2022-03-14-00_RC00  
     },
     (var.dataflow_job_udf_gcs_path != "" && var.dataflow_job_udf_function_name != "") ?
     {
       javascriptTextTransformGcsPath      = var.dataflow_job_udf_gcs_path
       javascriptTextTransformFunctionName = var.dataflow_job_udf_function_name
-  } : {})
+    } : {},
+    (var.splunk_hec_token_source == "PLAINTEXT") ?
+    {
+      token = var.splunk_hec_token
+    } : {},
+    (var.splunk_hec_token_source == "KMS") ?
+    {
+      token                 = var.splunk_hec_token
+      tokenKMSEncryptionKey = var.splunk_hec_token_kms_encryption_key
+    } : {},
+    (var.splunk_hec_token_source == "SECRET_MANAGER") ?
+    {
+      tokenSecretId = var.splunk_hec_token_secret_id # Supported as of 2022-03-14-00_RC00
+    } : {},
+  )
   region           = var.region
   network          = var.network
   subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"

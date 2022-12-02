@@ -41,7 +41,7 @@ locals {
   # If provided, set Dataflow worker to new user-managed service account;
   # otherwise, use Compute Engine default service account
   dataflow_worker_service_account = ((var.dataflow_worker_service_account != "")
-    ? "${var.dataflow_worker_service_account}@${var.project}.iam.gserviceaccount.com"
+    ? google_service_account.dataflow_worker_service_account[0].email
   : "${data.google_project.project.number}-compute@developer.gserviceaccount.com")
 
   subnet_name           = coalesce(var.subnet, "${var.network}-${var.region}")
@@ -88,6 +88,12 @@ resource "google_logging_project_sink" "project_log_sink" {
   name        = local.project_log_sink_name
   destination = "pubsub.googleapis.com/projects/${var.project}/topics/${google_pubsub_topic.dataflow_input_pubsub_topic.name}"
   filter      = var.log_filter
+
+  exclusions {
+    name        = "exclude_dataflow"
+    description = "Exclude dataflow logs to not create an infinite loop"
+    filter      = "resource.type=\"dataflow_step\" AND resource.labels.job_name = \"${local.dataflow_main_job_name}\""
+  }
 
   unique_writer_identity = true
 }
