@@ -61,7 +61,9 @@ locals {
   # secret version ID whereas the IAM policy binding expects parent secret ID
   splunk_hec_token_secret_version_id = var.splunk_hec_token_secret_id
   # Infer secret ID from input which is actually the secret *version* ID
-  splunk_hec_token_secret_id = regex("^(projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+)\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)[0]
+  splunk_hec_token_secret_id = ((var.splunk_hec_token_secret_id != "")
+    ? regex("^(projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+)\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)[0]
+  : "")
 
   # Dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message       = true
