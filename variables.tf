@@ -105,7 +105,7 @@ variable "splunk_hec_token_kms_encryption_key" {
   }
 }
 
-# TODO: Make crooss variable validation once https://github.com/hashicorp/terraform/issues/25609 is resolved
+# TODO: Make cross variable validation once https://github.com/hashicorp/terraform/issues/25609 is resolved
 variable "splunk_hec_token_secret_id" {
   type        = string
   description = "(Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '')"

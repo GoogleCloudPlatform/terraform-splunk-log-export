@@ -56,6 +56,12 @@ locals {
   dataflow_input_subscription_name      = "${var.dataflow_job_name}-input-subscription"
   dataflow_output_deadletter_topic_name = "${var.dataflow_job_name}-deadletter-topic"
   dataflow_output_deadletter_sub_name   = "${var.dataflow_job_name}-deadletter-subscription"
+  # Store HEC token secret and secret version IDs in two separate local values.
+  # This is needed to disambiguate between the two given that the Dataflow template expects
+  # secret version ID whereas the IAM policy binding expects parent secret ID
+  splunk_hec_token_secret_version_id = var.splunk_hec_token_secret_id
+  # Infer secret ID from input which is actually the secret *version* ID
+  splunk_hec_token_secret_id = regex("^(projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+)\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)[0]
 
   # Dataflow job parameters (not externalized for this project)
   dataflow_job_include_pubsub_message       = true

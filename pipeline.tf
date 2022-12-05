@@ -83,13 +83,19 @@ resource "google_dataflow_job" "dataflow_job" {
     } : {},
     (var.splunk_hec_token_source == "SECRET_MANAGER") ?
     {
-      tokenSecretId = var.splunk_hec_token_secret_id # Supported as of 2022-03-14-00_RC00
+      tokenSecretId = local.splunk_hec_token_secret_version_id # Supported as of 2022-03-14-00_RC00
     } : {},
   )
   region           = var.region
   network          = var.network
   subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration = "WORKER_IP_PRIVATE"
+
+  lifecycle {
+    ignore_changes = [
+      additional_experiments # Ignore default experiments that may be added by Dataflow templates API
+    ]
+  }
 
   depends_on = [
     google_compute_subnetwork.splunk_subnet,
