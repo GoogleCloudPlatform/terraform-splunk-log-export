@@ -1,18 +1,6 @@
 <!-- BEGIN_TF_DOCS -->
 # Terraform templates for Google Cloud log export to Splunk
 
-Terraform scripts for deploying log export to Splunk per Google Cloud reference guide:</br>
-[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)
-.
-
-Resources created include an optional [Cloud Monitoring custom dashboard](#monitoring-dashboard-batteries-included) to monitor your log export operations. For more details on custom metrics in Splunk Dataflow template, see [New observability features for your Splunk Dataflow streaming pipelines](https://cloud.google.com/blog/products/data-analytics/simplify-your-splunk-dataflow-ops-with-improved-pipeline-observability).
-
-These deployment templates are provided as is, without warranty. See [Copyright & License](#copyright-&-license) below.
-
-### Architecture Diagram
-
-![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
-
 #### Inputs
 
 | Name | Description | Type |
@@ -50,6 +38,38 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="output_dataflow_log_export_dashboard"></a> [dataflow_log_export_dashboard](#output_dataflow_log_export_dashboard) | n/a |
 | <a name="output_dataflow_output_deadletter_subscription"></a> [dataflow_output_deadletter_subscription](#output_dataflow_output_deadletter_subscription) | n/a |
 
+#### Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 0.14.4 |
+| <a name="requirement_google"></a> [google](#requirement_google) | >= 3.54.0 |
+| <a name="requirement_random"></a> [random](#requirement_random) | >= 2.1.0 |
+
+Terraform scripts for deploying log export to Splunk per Google Cloud reference guide:</br>
+[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)
+.
+
+Resources created include an optional [Cloud Monitoring custom dashboard](#monitoring-dashboard-batteries-included) to monitor your log export operations. For more details on custom metrics in Splunk Dataflow template, see [New observability features for your Splunk Dataflow streaming pipelines](https://cloud.google.com/blog/products/data-analytics/simplify-your-splunk-dataflow-ops-with-improved-pipeline-observability).
+
+These deployment templates are provided as is, without warranty. See [Copyright & License](#copyright-&-license) below.
+
+### Architecture Diagram
+
+![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
+
+Terraform scripts for deploying log export to Splunk per Google Cloud reference guide:</br>
+[Deploying production-ready log exports to Splunk using Dataflow](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow)
+.
+
+Resources created include an optional [Cloud Monitoring custom dashboard](#monitoring-dashboard-batteries-included) to monitor your log export operations. For more details on custom metrics in Splunk Dataflow template, see [New observability features for your Splunk Dataflow streaming pipelines](https://cloud.google.com/blog/products/data-analytics/simplify-your-splunk-dataflow-ops-with-improved-pipeline-observability).
+
+These deployment templates are provided as is, without warranty. See [Copyright & License](#copyright-&-license) below.
+
+### Architecture Diagram
+
+![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
+
 ### Monitoring Dashboard (Batteries Included)
 
 Deployment templates include an optional Cloud Monitoring custom dashboard to monitor your log export operations:
@@ -74,42 +94,6 @@ To ensure proper pipeline operation, Terraform creates necessary IAM bindings at
 See [Security and permissions for pipelines](https://cloud.google.com/dataflow/docs/concepts/security-and-permissions#security_and_permissions_for_pipelines_on) to learn more about Dataflow service accounts and their permissions.
 
 ### Getting Started
-
-#### Requirements
-* Terraform 0.13+
-* Splunk Dataflow template 2022-04-25-00_RC00 or later
-
-#### Enabling APIs
-Before deploying the Terraform in a Google Cloud Platform Project, the following APIs must be enabled:
-* Compute Engine API
-* Dataflow API
-
-For information on enabling Google Cloud Platform APIs, please see [Getting Started: Enabling APIs](https://cloud.google.com/apis/docs/getting-started#enabling_apis).
-
-#### Setup working directory
-
-1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
-2. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired settings. See [list of input parameters](#configurable-parameters) above.
-3. Initialize Terraform working directory and download plugins by running:
-
-```shell
-$ terraform init
-```
-
-#### Deploy log export pipeline
-
-```shell
-$ terraform plan
-$ terraform apply
-```
-
-#### View log export monitoring dashboard
-
-1. Retrieve dashboard id from terraform output
-```shell
-$ terraform output dataflow_log_export_dashboad
-```
-The output is of the form `"projects/{project_id_or_number}/dashboards/{dashboard_id}"`.
 
 Take note of dashboard_id value.
 
