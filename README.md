@@ -149,4 +149,3 @@ $ terraform destroy
 Copyright 2021 Google LLC
 
 Terraform templates for Google Cloud Log Export to Splunk are licensed under the Apache license, v2.0. Details can be found in [LICENSE](./LICENSE) file.
-<!-- END_TF_DOCS -->
