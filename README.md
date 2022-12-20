@@ -116,11 +116,14 @@ Take note of dashboard_id value.
 
 2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
 
-#### Deploy replay pipeline
+#### Deploy replay pipeline when needed
 
-In the `replay.tf` file, uncomment the code under `splunk_dataflow_replay` and follow the sequence of `terraform plan` and `terraform apply`.
+The replay pipeline is not deployed by default; instead it is only used to move failed messages from the PubSub deadletter subscription back to the input topic, in order to be redelivered by the main log export pipeline (as depicted in above [diagram](#architecture-diagram)). Refer to [Handling delivery failures](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow#handling_delivery_failures) for more detail.
 
-Once the replay pipeline is no longer needed (the number of messages in the PubSub deadletter topic are at 0), comment out `splunk_dataflow_replay` and follow the `plan` and `apply` sequence above.
+**Caution**: Make sure to deploy replay pipeline only after the root cause of the delivery failure has been fixed. Otherwise, the replay pipeline will cause an infinite loop where failed messages are sent back for re-delivery, only to fail again, causing an infinite loop and wasted resources. For that same reason, make sure to tear down the replay pipeline once the failed messages from the deadletter subscription are all processed or replayed.
+
+1. To deploy replay pipeline, set `deploy_replay_job` variable to `true`, then follow the sequence of `terraform plan` and `terraform apply`.
+2. Once the replay pipeline is no longer needed (i.e. the number of messages in the PubSub deadletter subscription is 0), set `deploy_replay_job` variable to `false`, then follow the sequence of `terraform plan` and `terraform apply`.
 
 ### Cleanup
 
@@ -131,8 +134,8 @@ $ terraform destroy
 
 ### TODOs
 
-* ~~Support KMS-encrypted HEC token~~
 * Expose logging level knob
+* ~~Support KMS-encrypted HEC token~~
 * ~~Create replay pipeline~~
 * ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~
