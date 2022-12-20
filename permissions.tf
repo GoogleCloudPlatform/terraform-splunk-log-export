@@ -68,7 +68,7 @@ resource "google_secret_manager_secret_iam_member" "dataflow_worker_secret_acces
   count = (var.splunk_hec_token_source == "SECRET_MANAGER" &&
   var.splunk_hec_token_secret_id != "") ? 1 : 0
   project   = var.project
-  secret_id = var.splunk_hec_token_secret_id
+  secret_id = local.splunk_hec_token_secret_id # Use secret ID inferred from input secret version ID
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${local.dataflow_worker_service_account}"
 }

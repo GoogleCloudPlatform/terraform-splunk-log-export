@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 # Terraform templates for Google Cloud log export to Splunk
 
 Terraform scripts for deploying log export to Splunk per Google Cloud reference guide:</br>
@@ -13,6 +12,8 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 
 ![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
 
+### Terraform Module
+<!-- BEGIN_TF_DOCS -->
 #### Inputs
 
 | Name | Description | Type |
@@ -41,7 +42,6 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | (Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '') | `string` |
 | <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | (Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT | `string` |
 | <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` |
-
 #### Outputs
 
 | Name | Description |
@@ -50,6 +50,7 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="output_dataflow_job_id"></a> [dataflow_job_id](#output_dataflow_job_id) | n/a |
 | <a name="output_dataflow_log_export_dashboard"></a> [dataflow_log_export_dashboard](#output_dataflow_log_export_dashboard) | n/a |
 | <a name="output_dataflow_output_deadletter_subscription"></a> [dataflow_output_deadletter_subscription](#output_dataflow_output_deadletter_subscription) | n/a |
+<!-- END_TF_DOCS -->
 
 ### Monitoring Dashboard (Batteries Included)
 
@@ -152,4 +153,3 @@ $ terraform destroy
 Copyright 2021 Google LLC
 
 Terraform templates for Google Cloud Log Export to Splunk are licensed under the Apache license, v2.0. Details can be found in [LICENSE](./LICENSE) file.
-<!-- END_TF_DOCS -->
