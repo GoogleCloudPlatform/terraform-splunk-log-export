@@ -34,6 +34,7 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_dataflow_job_udf_gcs_path"></a> [dataflow_job_udf_gcs_path](#input_dataflow_job_udf_gcs_path) | (Optional) GCS path for JavaScript file (default No UDF used) | `string` |
 | <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` |
 | <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | (Optional) Name of worker service account to be created and used to execute job operations. Must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If parameter is empty, worker service account defaults to project's Compute Engine default service account. | `string` |
+| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | (Optional) Defines if replay pipeline should be deployed or not (default: `false`) | `bool` |
 | <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` |
 | <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` |
 | <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | (Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` |
@@ -116,11 +117,14 @@ Take note of dashboard_id value.
 
 2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
 
-#### Deploy replay pipeline
+#### Deploy replay pipeline when needed
 
-In the `replay.tf` file, uncomment the code under `splunk_dataflow_replay` and follow the sequence of `terraform plan` and `terraform apply`.
+The replay pipeline is not deployed by default; instead it is only used to move failed messages from the PubSub deadletter subscription back to the input topic, in order to be redelivered by the main log export pipeline (as depicted in above [diagram](#architecture-diagram)). Refer to [Handling delivery failures](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow#handling_delivery_failures) for more detail.
 
-Once the replay pipeline is no longer needed (the number of messages in the PubSub deadletter topic are at 0), comment out `splunk_dataflow_replay` and follow the `plan` and `apply` sequence above.
+**Caution**: Make sure to deploy replay pipeline only after the root cause of the delivery failure has been fixed. Otherwise, the replay pipeline will cause an infinite loop where failed messages are sent back for re-delivery, only to fail again, causing an infinite loop and wasted resources. For that same reason, make sure to tear down the replay pipeline once the failed messages from the deadletter subscription are all processed or replayed.
+
+1. To deploy replay pipeline, set `deploy_replay_job` variable to `true`, then follow the sequence of `terraform plan` and `terraform apply`.
+2. Once the replay pipeline is no longer needed (i.e. the number of messages in the PubSub deadletter subscription is 0), set `deploy_replay_job` variable to `false`, then follow the sequence of `terraform plan` and `terraform apply`.
 
 ### Cleanup
 
@@ -131,8 +135,8 @@ $ terraform destroy
 
 ### TODOs
 
-* ~~Support KMS-encrypted HEC token~~
 * Expose logging level knob
+* ~~Support KMS-encrypted HEC token~~
 * ~~Create replay pipeline~~
 * ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~

@@ -182,3 +182,9 @@ variable "dataflow_job_udf_function_name" {
   description = "(Optional) Name of JavaScript function to be called (default No UDF used)"
   default     = ""
 }
+
+variable "deploy_replay_job" {
+  type        = bool
+  description = "(Optional) Defines if replay pipeline should be deployed or not (default: `false`)"
+  default     = false
+}

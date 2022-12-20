@@ -35,7 +35,6 @@ locals {
   dataflow_temporary_gcs_bucket_path = "tmp/"
 
   dataflow_splunk_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Splunk"
-  # tflint-ignore: terraform_unused_declarations
   dataflow_pubsub_template_gcs_path = "gs://dataflow-templates/${var.dataflow_template_version}/Cloud_PubSub_to_Cloud_PubSub"
 
   # If provided, set Dataflow worker to new user-managed service account;
