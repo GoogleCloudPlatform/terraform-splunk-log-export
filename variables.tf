@@ -188,3 +188,9 @@ variable "deploy_replay_job" {
   description = "(Optional) Defines if replay pipeline should be deployed or not (default: `false`)"
   default     = false
 }
+
+variable "create_service_account" {
+  type        = bool
+  default     = true
+  description = "(Optional) Defines if service account provided by `dataflow_worker_service_account` variable should be created. If not all permissions (except PubSub topics) for if should be binded externally"
+}

@@ -43,7 +43,7 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
 }
 
 resource "google_service_account" "dataflow_worker_service_account" {
-  count        = (var.dataflow_worker_service_account != "") ? 1 : 0
+  count        = (var.dataflow_worker_service_account != "" && var.create_service_account == true) ? 1 : 0
   account_id   = var.dataflow_worker_service_account
   display_name = "Dataflow worker service account to execute pipeline operations"
 }
