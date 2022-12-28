@@ -188,3 +188,9 @@ variable "deploy_replay_job" {
   description = "(Optional) Defines if replay pipeline should be deployed or not (default: `false`)"
   default     = false
 }
+
+variable "use_externally_managed_dataflow_sa" {
+  type        = bool
+  default     = false
+  description = "(Optional) Defines if service account provided by `dataflow_worker_service_account` variable should be created or it is managed outside of the module. If not all permissions (except PubSub topics) for if should be binded externally."
+}

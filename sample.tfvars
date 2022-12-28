@@ -32,6 +32,7 @@ splunk_hec_token_kms_encryption_key = ""
 
 # Dataflow job parameters
 dataflow_worker_service_account             = "export-pipeline-worker"
+use_externally_managed_dataflow_sa          = false
 dataflow_job_name                           = "export-pipeline"
 dataflow_job_machine_type                   = "n1-standard-4"
 dataflow_job_machine_count                  = 2
@@ -43,3 +44,6 @@ dataflow_job_udf_function_name              = ""
 
 # Dashboard parameters
 scoping_project = "[MY_PROJECT]"
+
+# Replay job settings
+deploy_replay_job = false
