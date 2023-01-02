@@ -76,7 +76,8 @@ locals {
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {
-  name = local.dataflow_input_topic_name
+  name         = local.dataflow_input_topic_name
+  kms_key_name = var.pubsub_kms_key_name
 }
 
 resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
