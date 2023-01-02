@@ -47,3 +47,7 @@ scoping_project = "[MY_PROJECT]"
 
 # Replay job settings
 deploy_replay_job = false
+
+# Security parameters
+pubsub_kms_key_name = "projects/[MY_PROJECT]/locations/[MY_REGION]/keyRings/[MY_KEYRING_NAME]/cryptoKeys/[MY_KEY_NAME]"
+gcs_kms_key_name    = "projects/[MY_PROJECT]/locations/[MY_REGION]/keyRings/[MY_KEYRING_NAME]/cryptoKeys/[MY_KEY_NAME]"
