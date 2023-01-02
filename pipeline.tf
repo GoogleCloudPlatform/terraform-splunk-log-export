@@ -14,8 +14,9 @@
 
 
 resource "google_pubsub_topic" "dataflow_deadletter_pubsub_topic" {
-  project = var.project
-  name    = local.dataflow_output_deadletter_topic_name
+  project      = var.project
+  name         = local.dataflow_output_deadletter_topic_name
+  kms_key_name = var.pubsub_kms_key_name
 }
 
 resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {

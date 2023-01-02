@@ -196,3 +196,13 @@ variable "use_externally_managed_dataflow_sa" {
   default     = false
   description = "(Optional) Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module."
 }
+
+variable "pubsub_kms_key_name" {
+  type = string
+  description = "(Optional) The resource name of the Cloud KMS CryptoKey to be used to protect access to messages published on created topics. Your project's PubSub service account (`service-{{PROJECT_NUMBER}}@gcp-sa-pubsub.iam.gserviceaccount.com`) must have `roles/cloudkms.cryptoKeyEncrypterDecrypter` to use this feature. The expected format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`."
+  default = ""
+  validation {
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.pubsub_kms_key_name)) || var.pubsub_kms_key_name == ""
+    error_message = "Pub/Sub KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
+  }
+}
