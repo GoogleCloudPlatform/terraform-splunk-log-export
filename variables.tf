@@ -196,11 +196,21 @@ variable "create_service_account" {
 }
 
 variable "pubsub_kms_key_name" {
-  type = string
+  type        = string
   description = "(Optional) The resource name of the Cloud KMS CryptoKey to be used to protect access to messages published on created topics. Your project's PubSub service account (`service-{{PROJECT_NUMBER}}@gcp-sa-pubsub.iam.gserviceaccount.com`) must have `roles/cloudkms.cryptoKeyEncrypterDecrypter` to use this feature. The expected format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`."
-  default = ""
+  default     = ""
   validation {
     condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.pubsub_kms_key_name)) || var.pubsub_kms_key_name == ""
     error_message = "Pub/Sub KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
+  }
+}
+
+variable "gcs_kms_key_name" {
+  type        = string
+  description = "(Optional) The `id` of a Cloud KMS key that will be used to encrypt objects inserted into temporary bucket. User is responsible for permissions to this key for Cloud Storage Service Account."
+  default     = ""
+  validation {
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.gcs_kms_key_name)) || var.gcs_kms_key_name == ""
+    error_message = "Cloud Storage KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
   }
 }

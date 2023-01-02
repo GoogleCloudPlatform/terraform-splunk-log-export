@@ -7,7 +7,8 @@ The project is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added 
 
-- Option `create_service_account` to be able to use custom Compute Engine service account. And manage some permissions for it outside of the module. 
+- Option `create_service_account` to be able to use custom Compute Engine service account. And manage some permissions for it outside of the module.
+- Options `pubsub_kms_key_name` and `gcs_kms_key_name` to be able to add encryption of created resources with customer managed keys.
 
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2022-12-20
