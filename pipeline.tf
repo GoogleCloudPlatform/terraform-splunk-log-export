@@ -32,9 +32,10 @@ resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
 }
 
 resource "google_storage_bucket" "dataflow_job_temp_bucket" {
-  name          = local.dataflow_temporary_gcs_bucket_name
-  location      = var.region
-  storage_class = "REGIONAL"
+  name                        = local.dataflow_temporary_gcs_bucket_name
+  location                    = var.region
+  storage_class               = "REGIONAL"
+  uniform_bucket_level_access = true
   dynamic "encryption" {
     for_each = (var.gcs_kms_key_name == "") ? [] : [1]
     content {
