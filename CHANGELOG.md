@@ -9,6 +9,10 @@ The project is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Option `use_externally_managed_dataflow_sa` to be able to use pre-existing externally-managed service account as Dataflow worker service account. User is expected to apply and manage IAM permissions over external resources (e.g. Cloud KMS key or Secret version) outside of this module.
 
+### Removed
+
+- `provider configuration` because it is causing issues of usage with `count` and `for_each`
+
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2022-12-20
 

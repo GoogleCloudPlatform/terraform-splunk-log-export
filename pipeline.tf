@@ -14,12 +14,14 @@
 
 
 resource "google_pubsub_topic" "dataflow_deadletter_pubsub_topic" {
-  name = local.dataflow_output_deadletter_topic_name
+  project = var.project
+  name    = local.dataflow_output_deadletter_topic_name
 }
 
 resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
-  name  = local.dataflow_output_deadletter_sub_name
-  topic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
+  project = var.project
+  name    = local.dataflow_output_deadletter_sub_name
+  topic   = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
 
   # messages retained for 7 days (max)
   message_retention_duration = "604800s"
@@ -31,6 +33,7 @@ resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
 }
 
 resource "google_storage_bucket" "dataflow_job_temp_bucket" {
+  project       = var.project
   name          = local.dataflow_temporary_gcs_bucket_name
   location      = var.region
   storage_class = "REGIONAL"
@@ -44,11 +47,13 @@ resource "google_storage_bucket_object" "dataflow_job_temp_object" {
 
 resource "google_service_account" "dataflow_worker_service_account" {
   count        = (var.dataflow_worker_service_account != "" && var.use_externally_managed_dataflow_sa == false) ? 1 : 0
+  project      = var.project
   account_id   = var.dataflow_worker_service_account
   display_name = "Dataflow worker service account to execute pipeline operations"
 }
 
 resource "google_dataflow_job" "dataflow_job" {
+  project               = var.project
   name                  = local.dataflow_main_job_name
   template_gcs_path     = local.dataflow_splunk_template_gcs_path
   temp_gcs_location     = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
