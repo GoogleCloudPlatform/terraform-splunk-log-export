@@ -14,13 +14,15 @@
 
 
 resource "google_pubsub_topic" "dataflow_deadletter_pubsub_topic" {
+  project      = var.project
   name         = local.dataflow_output_deadletter_topic_name
   kms_key_name = var.pubsub_kms_key_name
 }
 
 resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
-  name  = local.dataflow_output_deadletter_sub_name
-  topic = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
+  project = var.project
+  name    = local.dataflow_output_deadletter_sub_name
+  topic   = google_pubsub_topic.dataflow_deadletter_pubsub_topic.name
 
   # messages retained for 7 days (max)
   message_retention_duration = "604800s"
@@ -32,6 +34,7 @@ resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
 }
 
 resource "google_storage_bucket" "dataflow_job_temp_bucket" {
+  project                     = var.project
   name                        = local.dataflow_temporary_gcs_bucket_name
   location                    = var.region
   storage_class               = "REGIONAL"
@@ -57,6 +60,7 @@ resource "google_service_account" "dataflow_worker_service_account" {
 }
 
 resource "google_dataflow_job" "dataflow_job" {
+  project               = var.project
   name                  = local.dataflow_main_job_name
   template_gcs_path     = local.dataflow_splunk_template_gcs_path
   temp_gcs_location     = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
