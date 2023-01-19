@@ -45,7 +45,14 @@ locals {
     var.dataflow_worker_service_account) :
   "${data.google_project.project.number}-compute@developer.gserviceaccount.com")
 
-  set_dataflow_permissions = (var.use_externally_managed_dataflow_sa == true && var.dataflow_worker_service_account != "") ? false : true
+  # Grant Dataflow worker service account required IAM roles over external resources
+  # **unless** using an externally managed worker service account (Option 1 and 2):
+  grant_service_account_roles = var.use_externally_managed_dataflow_sa == true
+  # Grant caller (you!) permissions to impersonate service account
+  # **only** when creating a new worker service account (Option 2)
+  grant_service_account_impersonation = (
+    var.dataflow_worker_service_account != "" && var.use_externally_managed_dataflow_sa == false
+  )
 
   subnet_name           = coalesce(var.subnet, "${var.network}-${var.region}")
   project_log_sink_name = "${var.dataflow_job_name}-project-log-sink"
