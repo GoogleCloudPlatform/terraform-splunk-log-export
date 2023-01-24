@@ -7,7 +7,7 @@ The project is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added 
 
-- Option `create_service_account` to be able to use custom Compute Engine service account. And manage some permissions for it outside of the module. 
+- Option `use_externally_managed_dataflow_sa` to be able to use pre-existing externally-managed service account as Dataflow worker service account. User is expected to apply and manage IAM permissions over external resources (e.g. Cloud KMS key or Secret version) outside of this module.
 
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2022-12-20
