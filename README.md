@@ -33,8 +33,8 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_dataflow_job_udf_function_name"></a> [dataflow_job_udf_function_name](#input_dataflow_job_udf_function_name) | (Optional) Name of JavaScript function to be called (default No UDF used) | `string` |
 | <a name="input_dataflow_job_udf_gcs_path"></a> [dataflow_job_udf_gcs_path](#input_dataflow_job_udf_gcs_path) | (Optional) GCS path for JavaScript file (default No UDF used) | `string` |
 | <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` |
-| <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | (Optional) Name of worker service account to be created and used to execute job operations. Must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If parameter is empty, worker service account defaults to project's Compute Engine default service account. | `string` |
-| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | (Optional) Defines if replay pipeline should be deployed or not (default: `false`) | `bool` |
+| <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | (Optional) Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account. | `string` |
+| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | (Optional) Determines if replay pipeline should be deployed or not (default: `false`) | `bool` |
 | <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` |
 | <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` |
 | <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | (Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` |
@@ -42,6 +42,7 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | (Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '') | `string` |
 | <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | (Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT | `string` |
 | <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` |
+| <a name="input_use_externally_managed_dataflow_sa"></a> [use_externally_managed_dataflow_sa](#input_use_externally_managed_dataflow_sa) | (Optional) Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module. | `bool` |
 #### Outputs
 
 | Name | Description |
@@ -69,9 +70,29 @@ At a minimum, you must have the following roles before you deploy the resources 
 
 To ensure proper pipeline operation, Terraform creates necessary IAM bindings at the resources level as part of this deployment to grant access between newly created resources. For example, Log sink writer is granted Pub/Sub Publisher role over the input topic which collects all the logs, and Dataflow worker service account is granted both Pub/Sub subscriber over the input subscription, and Pub/Sub Publisher role over the deadletter topic.
 
-**Note about Dataflow permissions**: You must also have permission to impersonate Dataflow worker service account in order to attach that service account to Compute Engine VMs which will execute pipeline operations. In case of default worker service account (i.e. your project's Compute Engine default service account), ensure you have `iam.serviceAccounts.actAs` permission over Compute Engine default service account in your project. For security purposes, this Terraform does not modify access to your existing Compute Engine default service account due to risk of granting broad permissions. On the other hand, if you choose to use a user-managed worker service account (by setting `dataflow_worker_service_account` template parameter), this Terraform will add necessary permission over the new service account. The former approach, i.e. user-managed service account, is recommended in order to use a minimally-scoped service account dedicated for this pipeline, and to have impersonation permission managed for you by this Terraform.
+#### Dataflow permissions
 
-**Please Note** that if variable `dataflow_worker_service_account` is not provided. Default Compute Engine service account would be modified by the module.
+The Dataflow worker service service account is the identity used by the Dataflow worker VMs. This module offers three options in terms of which worker service account to use and how to manage their IAM permissions: 
+
+1. Module uses your project's [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account) as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS if applicable. This is the **default behavior**. 
+
+2. Module creates a dedicated service account to be used as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS key if applicable. To use this option, set `dataflow_worker_service_account` to the name of this new service account.
+
+3. Module uses a service account managed outside of the module. The module grants that service account necessary IAM permissions over Google Cloud resources created by the module such as Pub/Sub, Cloud Storage. You must grant this service account the required IAM roles (`roles/dataflow.worker` ) and IAM permissions over external resources such as any provided secret or KMS key (more below), _before_ running this module. To use this option, set `use_externally_managed_dataflow_sa` to `true` and set `dataflow_worker_service_account` to the email address of this external service account.
+
+For production workloads, as a security best practice, it's recommended to use option 2 or 3, both of which rely on user-managed worker service account, instead of the Compute Engine default service account. This ensures a minimally-scoped service account dedicated for this pipeline.
+
+For option 3, make sure to grant:
+- The provided Dataflow service account the following roles:
+    - `roles/dataflow.worker`
+    - `roles/secretmanager.secretAccessor` on secret - if `SECRET_MANAGER` HEC token source is used
+    - `roles/cloudkms.cryptoKeyDecrypter` on KMS key- if `KMS` HEC token source is used
+
+For option 1 & 3, make sure to grant:
+- Your user account or service account used to run Terraform the following role:
+    - `roles/iam.serviceAccountUser` on the Dataflow service account in order to impersonate the service account. See following note for more details.
+
+**Note about Dataflow worker service account impersonation**: To run this Terraform module, you must have permission to impersonate the Dataflow worker service account in order to attach that service account to Dataflow worker VMs. In case of the default Dataflow worker service account (Option 1), ensure you have `iam.serviceAccounts.actAs` permission over Compute Engine default service account in your project. For security purposes, this Terraform does not modify access to your existing Compute Engine default service account due to risk of granting broad permissions. On the other hand, if you choose to create and use a user-managed worker service account (Option 2) by setting `dataflow_worker_service_account` (and keeping `use_externally_managed_dataflow_sa` = `false`), this Terraform will add necessary impersonation permission over the new service account.
 
 See [Security and permissions for pipelines](https://cloud.google.com/dataflow/docs/concepts/security-and-permissions#security_and_permissions_for_pipelines_on) to learn more about Dataflow service accounts and their permissions.
 
