@@ -33,10 +33,11 @@ resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
 }
 
 resource "google_storage_bucket" "dataflow_job_temp_bucket" {
-  project       = var.project
-  name          = local.dataflow_temporary_gcs_bucket_name
-  location      = var.region
-  storage_class = "REGIONAL"
+  project                     = var.project
+  name                        = local.dataflow_temporary_gcs_bucket_name
+  location                    = var.region
+  storage_class               = "REGIONAL"
+  uniform_bucket_level_access = true
 }
 
 resource "google_storage_bucket_object" "dataflow_job_temp_object" {
