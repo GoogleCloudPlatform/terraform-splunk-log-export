@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "google_project" "project" {}
+data "google_project" "project" {
+  project_id = var.project
+}
 
 data "google_client_openid_userinfo" "provider_identity" {}
 
@@ -89,12 +91,14 @@ locals {
 }
 
 resource "google_pubsub_topic" "dataflow_input_pubsub_topic" {
-  name = local.dataflow_input_topic_name
+  project = var.project
+  name    = local.dataflow_input_topic_name
 }
 
 resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
-  name  = local.dataflow_input_subscription_name
-  topic = google_pubsub_topic.dataflow_input_pubsub_topic.name
+  project = var.project
+  name    = local.dataflow_input_subscription_name
+  topic   = google_pubsub_topic.dataflow_input_pubsub_topic.name
 
   # messages retained for 7 days (max)
   message_retention_duration = "604800s"
@@ -107,6 +111,7 @@ resource "google_pubsub_subscription" "dataflow_input_pubsub_subscription" {
 }
 
 resource "google_logging_project_sink" "project_log_sink" {
+  project     = var.project
   name        = local.project_log_sink_name
   destination = "pubsub.googleapis.com/projects/${var.project}/topics/${google_pubsub_topic.dataflow_input_pubsub_topic.name}"
   filter      = var.log_filter

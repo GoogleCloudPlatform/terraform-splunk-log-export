@@ -1,6 +1,7 @@
 resource "google_compute_network" "splunk_export" {
   count = var.create_network == true ? 1 : 0
 
+  project                 = var.project
   name                    = var.network
   auto_create_subnetworks = false
 }
@@ -8,6 +9,7 @@ resource "google_compute_network" "splunk_export" {
 resource "google_compute_subnetwork" "splunk_subnet" {
   count = var.create_network == true ? 1 : 0
 
+  project                  = var.project
   name                     = local.subnet_name
   ip_cidr_range            = var.primary_subnet_cidr
   region                   = var.region
@@ -27,7 +29,8 @@ resource "google_compute_subnetwork" "splunk_subnet" {
 resource "google_dns_policy" "splunk_network_dns_policy" {
   count = var.create_network == true ? 1 : 0
 
-  name = "${var.network}-dns-policy"
+  project = var.project
+  name    = "${var.network}-dns-policy"
 
   enable_logging = true
 
@@ -39,6 +42,7 @@ resource "google_dns_policy" "splunk_network_dns_policy" {
 resource "google_compute_router" "dataflow_to_splunk_router" {
   count = var.create_network == true ? 1 : 0
 
+  project = var.project
   name    = "${var.network}-${var.region}-router"
   region  = google_compute_subnetwork.splunk_subnet[count.index].region
   network = google_compute_network.splunk_export[count.index].id
@@ -47,13 +51,15 @@ resource "google_compute_router" "dataflow_to_splunk_router" {
 resource "google_compute_address" "dataflow_nat_ip_address" {
   count = var.create_network == true ? 1 : 0
 
-  name   = "dataflow-splunk-nat-ip-address"
-  region = google_compute_subnetwork.splunk_subnet[count.index].region
+  project = var.project
+  name    = "dataflow-splunk-nat-ip-address"
+  region  = google_compute_subnetwork.splunk_subnet[count.index].region
 }
 
 resource "google_compute_router_nat" "dataflow_nat" {
   count = var.create_network == true ? 1 : 0
 
+  project                            = var.project
   name                               = "${var.network}-${var.region}-router-nat"
   router                             = google_compute_router.dataflow_to_splunk_router[count.index].name
   region                             = google_compute_router.dataflow_to_splunk_router[count.index].region
@@ -77,6 +83,7 @@ resource "google_compute_router_nat" "dataflow_nat" {
 resource "google_compute_firewall" "connect_dataflow_workers" {
   count = var.create_network == true ? 1 : 0
 
+  project = var.project
   name    = "dataflow-internal-ip-fwr"
   network = google_compute_network.splunk_export[count.index].id
 
