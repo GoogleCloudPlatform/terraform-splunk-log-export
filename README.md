@@ -119,6 +119,15 @@ For information on enabling Google Cloud Platform APIs, please see [Getting Star
 $ terraform init
 ```
 
+#### Authenticate with GCP
+Note: You can skip this step if this module is inheriting the Terraform Google provider (e.g. from a parent module) with pre-configured credentials.
+
+```shell
+$ gcloud auth application-default login --project <ENTER_YOUR_PROJECT_ID>
+```
+
+This assumes you are running Terraform on your workstation with your own identity. For other methods to authenticate such as using a Terraform-specific service account, see [Google Provider authentication docs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
+
 #### Deploy log export pipeline
 
 ```shell
