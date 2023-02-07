@@ -13,16 +13,16 @@
 # limitations under the License.
 
 /*
-The replay job should stay commented out while the main export pipeline is initially deployed.
-When the replay job needs to be run, simply uncomment the module and deploy the replay pipeline. 
-From the CLI, this may look like `terraform apply -target="google_dataflow_job.splunk_dataflow_replay"`
-After the deadletter Pub/Sub topic has no more messages, comment out the module and run a regular terraform deployment (ex. terraform apply). Terraform will automatically destroy the replay job.
-
-`terraform apply -target` usage documentation is here: https://www.terraform.io/docs/cli/commands/apply.html
+When the replay job needs to be run, simply run terraform with overriding variable
+`terraform apply -var deploy_replay_job="true"` or change the value in tfvars file.
+After the deadletter Pub/Sub topic has no more messages, set `deploy_replay_job` value to `false ` and 
+run a regular terraform deployment (ex. terraform apply). 
 */
 
-/*
+
 resource "google_dataflow_job" "splunk_dataflow_replay" {
+  count = var.deploy_replay_job == true ? 1 : 0
+
   name              = local.dataflow_replay_job_name
   template_gcs_path = local.dataflow_pubsub_template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
@@ -32,13 +32,12 @@ resource "google_dataflow_job" "splunk_dataflow_replay" {
     inputSubscription = google_pubsub_subscription.dataflow_deadletter_pubsub_sub.id
     outputTopic       = google_pubsub_topic.dataflow_input_pubsub_topic.id
   }
-  region                = var.region
-  network               = var.network
-  subnetwork            = "regions/${var.region}/subnetworks/${local.subnet_name}"
-  ip_configuration      = "WORKER_IP_PRIVATE"
+  region           = var.region
+  network          = var.network
+  subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
+  ip_configuration = "WORKER_IP_PRIVATE"
 
   depends_on = [
     google_compute_subnetwork.splunk_subnet
   ]
 }
-*/

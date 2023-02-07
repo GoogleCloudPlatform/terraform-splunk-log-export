@@ -12,34 +12,89 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 
 ![Architecture Diagram of Log Export to Splunk](./images/logging_export_to_splunk.png)
 
-### Configurable Parameters
+### Terraform Module
+<!-- BEGIN_TF_DOCS -->
+#### Inputs
 
-Parameter | Description 
---- | ---
-project | Project ID to deploy resources in
-region | Region to deploy regional resources into. Must match `subnet`'s region if deploying into existing network (`create_network=false`) like a Shared VPC. See `subnet` parameter below.
-create\_network | Boolean value specifying if a new network needs to be created.
-network | Network to deploy into
-subnet | Subnet to deploy into. This is **required** when deploying into existing network (`create_network=false`) like a Shared VPC.
-primary\_subnet\_cidr | The CIDR Range of the primary subnet.
-workspace | (Optional) Workspace to create Monitoring dashboard in. This assumes Workspace is already created and project is already added to it. If not specified, no dashboard will be created
-log_filter | Log filter to use when exporting logs
-splunk_hec_url | Splunk HEC URL to stream data to, e.g. https://[MY_SPLUNK_IP_OR_FQDN]:8088
-splunk_hec_token | Splunk HEC token
-dataflow_job_name | Dataflow job name. No spaces.
-dataflow_job_machine_type | (Optional) Dataflow job worker machine type (default 'n1-standard-4')
-dataflow_job_machine_count | (Optional) Dataflow job max worker count (default 2)
-dataflow_job_parallelism | (Optional) Maximum parallel requests to Splunk (default 8)
-dataflow_job_batch_count | (Optional) Batch count of messages in single request to Splunk (default 50)
-dataflow_job_disable_certificate_validation | (Optional) Boolean to disable SSL certificate validation (default false)
-dataflow_job_udf_gcs_path | (Optional) GCS path for JavaScript file (default No UDF used)
-dataflow_job_udf_function_name | (Optional) Name of JavaScript function to be called (default No UDF used)
-dataflow_template_version | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'
+| Name | Description | Type |
+|------|-------------|------|
+| <a name="input_dataflow_job_name"></a> [dataflow_job_name](#input_dataflow_job_name) | Dataflow job name. No spaces | `string` |
+| <a name="input_log_filter"></a> [log_filter](#input_log_filter) | Log filter to use when exporting logs | `string` |
+| <a name="input_network"></a> [network](#input_network) | Network to deploy into | `string` |
+| <a name="input_project"></a> [project](#input_project) | Project ID to deploy resources in | `string` |
+| <a name="input_region"></a> [region](#input_region) | Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below | `string` |
+| <a name="input_splunk_hec_url"></a> [splunk_hec_url](#input_splunk_hec_url) | Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088 | `string` |
+| <a name="input_create_network"></a> [create_network](#input_create_network) | Boolean value specifying if a new network needs to be created. | `bool` |
+| <a name="input_dataflow_job_batch_count"></a> [dataflow_job_batch_count](#input_dataflow_job_batch_count) | (Optional) Batch count of messages in single request to Splunk (default 50) | `number` |
+| <a name="input_dataflow_job_disable_certificate_validation"></a> [dataflow_job_disable_certificate_validation](#input_dataflow_job_disable_certificate_validation) | (Optional) Boolean to disable SSL certificate validation (default `false`) | `bool` |
+| <a name="input_dataflow_job_machine_count"></a> [dataflow_job_machine_count](#input_dataflow_job_machine_count) | (Optional) Dataflow job max worker count (default 2) | `number` |
+| <a name="input_dataflow_job_machine_type"></a> [dataflow_job_machine_type](#input_dataflow_job_machine_type) | (Optional) Dataflow job worker machine type (default 'n1-standard-4') | `string` |
+| <a name="input_dataflow_job_parallelism"></a> [dataflow_job_parallelism](#input_dataflow_job_parallelism) | (Optional) Maximum parallel requests to Splunk (default 8) | `number` |
+| <a name="input_dataflow_job_udf_function_name"></a> [dataflow_job_udf_function_name](#input_dataflow_job_udf_function_name) | (Optional) Name of JavaScript function to be called (default No UDF used) | `string` |
+| <a name="input_dataflow_job_udf_gcs_path"></a> [dataflow_job_udf_gcs_path](#input_dataflow_job_udf_gcs_path) | (Optional) GCS path for JavaScript file (default No UDF used) | `string` |
+| <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` |
+| <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | (Optional) Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account. | `string` |
+| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | (Optional) Determines if replay pipeline should be deployed or not (default: `false`) | `bool` |
+| <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` |
+| <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` |
+| <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | (Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` |
+| <a name="input_splunk_hec_token_kms_encryption_key"></a> [splunk_hec_token_kms_encryption_key](#input_splunk_hec_token_kms_encryption_key) | (Optional) The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS (default: '') | `string` |
+| <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | (Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '') | `string` |
+| <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | (Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT | `string` |
+| <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` |
+| <a name="input_use_externally_managed_dataflow_sa"></a> [use_externally_managed_dataflow_sa](#input_use_externally_managed_dataflow_sa) | (Optional) Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module. | `bool` |
+#### Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_dataflow_input_topic"></a> [dataflow_input_topic](#output_dataflow_input_topic) | n/a |
+| <a name="output_dataflow_job_id"></a> [dataflow_job_id](#output_dataflow_job_id) | n/a |
+| <a name="output_dataflow_log_export_dashboard"></a> [dataflow_log_export_dashboard](#output_dataflow_log_export_dashboard) | n/a |
+| <a name="output_dataflow_output_deadletter_subscription"></a> [dataflow_output_deadletter_subscription](#output_dataflow_output_deadletter_subscription) | n/a |
+<!-- END_TF_DOCS -->
 
 ### Monitoring Dashboard (Batteries Included)
 
 Deployment templates include an optional Cloud Monitoring custom dashboard to monitor your log export operations:
 ![Ops Dashboard of Log Export to Splunk](./images/logging_export_ops_dashboard.png)
+
+### Permissions Required
+
+At a minimum, you must have the following roles before you deploy the resources in this Terraform:
+- Logs Configuration Writer (`roles/logging.configWriter`) at the project and/or organization level
+- Compute Network Admin (`roles/compute.networkAdmin`) at the project level
+- Compute Security Admin (`roles/compute.securityAdmin`) at the project level
+- Dataflow Admin (`roles/dataflow.admin`) at the project level
+- Pub/Sub Admin (`roles/pubsub.admin`) at the project level
+- Storage Admin (`roles/storage.admin`) at the project level
+
+To ensure proper pipeline operation, Terraform creates necessary IAM bindings at the resources level as part of this deployment to grant access between newly created resources. For example, Log sink writer is granted Pub/Sub Publisher role over the input topic which collects all the logs, and Dataflow worker service account is granted both Pub/Sub subscriber over the input subscription, and Pub/Sub Publisher role over the deadletter topic.
+
+#### Dataflow permissions
+
+The Dataflow worker service service account is the identity used by the Dataflow worker VMs. This module offers three options in terms of which worker service account to use and how to manage their IAM permissions: 
+
+1. Module uses your project's [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account) as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS if applicable. This is the **default behavior**. 
+
+2. Module creates a dedicated service account to be used as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS key if applicable. To use this option, set `dataflow_worker_service_account` to the name of this new service account.
+
+3. Module uses a service account managed outside of the module. The module grants that service account necessary IAM permissions over Google Cloud resources created by the module such as Pub/Sub, Cloud Storage. You must grant this service account the required IAM roles (`roles/dataflow.worker` ) and IAM permissions over external resources such as any provided secret or KMS key (more below), _before_ running this module. To use this option, set `use_externally_managed_dataflow_sa` to `true` and set `dataflow_worker_service_account` to the email address of this external service account.
+
+For production workloads, as a security best practice, it's recommended to use option 2 or 3, both of which rely on user-managed worker service account, instead of the Compute Engine default service account. This ensures a minimally-scoped service account dedicated for this pipeline.
+
+For option 3, make sure to grant:
+- The provided Dataflow service account the following roles:
+    - `roles/dataflow.worker`
+    - `roles/secretmanager.secretAccessor` on secret - if `SECRET_MANAGER` HEC token source is used
+    - `roles/cloudkms.cryptoKeyDecrypter` on KMS key- if `KMS` HEC token source is used
+
+For option 1 & 3, make sure to grant:
+- Your user account or service account used to run Terraform the following role:
+    - `roles/iam.serviceAccountUser` on the Dataflow service account in order to impersonate the service account. See following note for more details.
+
+**Note about Dataflow worker service account impersonation**: To run this Terraform module, you must have permission to impersonate the Dataflow worker service account in order to attach that service account to Dataflow worker VMs. In case of the default Dataflow worker service account (Option 1), ensure you have `iam.serviceAccounts.actAs` permission over Compute Engine default service account in your project. For security purposes, this Terraform does not modify access to your existing Compute Engine default service account due to risk of granting broad permissions. On the other hand, if you choose to create and use a user-managed worker service account (Option 2) by setting `dataflow_worker_service_account` (and keeping `use_externally_managed_dataflow_sa` = `false`), this Terraform will add necessary impersonation permission over the new service account.
+
+See [Security and permissions for pipelines](https://cloud.google.com/dataflow/docs/concepts/security-and-permissions#security_and_permissions_for_pipelines_on) to learn more about Dataflow service accounts and their permissions.
 
 ### Getting Started
 
@@ -64,6 +119,15 @@ For information on enabling Google Cloud Platform APIs, please see [Getting Star
 $ terraform init
 ```
 
+#### Authenticate with GCP
+Note: You can skip this step if this module is inheriting the Terraform Google provider (e.g. from a parent module) with pre-configured credentials.
+
+```shell
+$ gcloud auth application-default login --project <ENTER_YOUR_PROJECT_ID>
+```
+
+This assumes you are running Terraform on your workstation with your own identity. For other methods to authenticate such as using a Terraform-specific service account, see [Google Provider authentication docs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication).
+
 #### Deploy log export pipeline
 
 ```shell
@@ -71,23 +135,26 @@ $ terraform plan
 $ terraform apply
 ```
 
-#### View log export monitoring dashboard (applicable if Monitoring Workspace parameter was provided)
+#### View log export monitoring dashboard
 
- 1. Retrieve dashboard id from terraform output
+1. Retrieve dashboard id from terraform output
 ```shell
 $ terraform output dataflow_log_export_dashboad
 ```
-  The output is of the form `"projects/{project_id_or_number}/dashboards/{dashboard_id}"`.
-  
-  Take note of dashboard_id value.
+The output is of the form `"projects/{project_id_or_number}/dashboards/{dashboard_id}"`.
 
- 2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
+Take note of dashboard_id value.
 
-#### Deploy replay pipeline
+2. Visit newly created Monitoring Dashboard in Cloud Console by replacing dashboard_id in the following URL: https://console.cloud.google.com/monitoring/dashboards/builder/{dashboard_id}
 
-In the `replay.tf` file, uncomment the code under `splunk_dataflow_replay` and follow the sequence of `terraform plan` and `terraform apply`.
+#### Deploy replay pipeline when needed
 
-Once the replay pipeline is no longer needed (the number of messages in the PubSub deadletter topic are at 0), comment out `splunk_dataflow_replay` and follow the `plan` and `apply` sequence above.
+The replay pipeline is not deployed by default; instead it is only used to move failed messages from the PubSub deadletter subscription back to the input topic, in order to be redelivered by the main log export pipeline (as depicted in above [diagram](#architecture-diagram)). Refer to [Handling delivery failures](https://cloud.google.com/architecture/deploying-production-ready-log-exports-to-splunk-using-dataflow#handling_delivery_failures) for more detail.
+
+**Caution**: Make sure to deploy replay pipeline only after the root cause of the delivery failure has been fixed. Otherwise, the replay pipeline will cause an infinite loop where failed messages are sent back for re-delivery, only to fail again, causing an infinite loop and wasted resources. For that same reason, make sure to tear down the replay pipeline once the failed messages from the deadletter subscription are all processed or replayed.
+
+1. To deploy replay pipeline, set `deploy_replay_job` variable to `true`, then follow the sequence of `terraform plan` and `terraform apply`.
+2. Once the replay pipeline is no longer needed (i.e. the number of messages in the PubSub deadletter subscription is 0), set `deploy_replay_job` variable to `false`, then follow the sequence of `terraform plan` and `terraform apply`.
 
 ### Cleanup
 
@@ -98,8 +165,8 @@ $ terraform destroy
 
 ### TODOs
 
-* Support KMS-encrypted HEC token
 * Expose logging level knob
+* ~~Support KMS-encrypted HEC token~~
 * ~~Create replay pipeline~~
 * ~~Create secure network for self-contained setup if existing network is not provided~~
 * ~~Add Cloud Monitoring dashboard~~
@@ -109,7 +176,7 @@ $ terraform destroy
 
 * **Roy Arsan** - [rarsan](https://github.com/rarsan)
 * **Nick Predey** - [npredey](https://github.com/npredey)
-
+* **Igor Lakhtenkov** - [Lakhtenkov-iv](https://github.com/Lakhtenkov-iv)
 
 ### Copyright & License
 

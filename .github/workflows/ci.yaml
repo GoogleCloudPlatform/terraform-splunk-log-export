@@ -1,0 +1,63 @@
+name: Check quality gates
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tflint:
+    name: Run TFlint
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout source code
+
+    - uses: actions/cache@v2
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+
+    - uses: terraform-linters/setup-tflint@v2
+      name: Setup TFLint
+      with:
+        tflint_version: v0.42.2
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+
+    - name: Run TFLint
+      run: tflint -f compact
+  fmt:
+    name: Run Terraform format
+    runs-on: ubuntu-latest
+
+    steps: 
+    - uses: actions/checkout@v2
+      name: Checkout source code
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.1.7
+      name: Install Terraform
+
+    - name: Run terraform fmt
+      run: terraform fmt -check=true -write=false
+  docs:
+    name: Validate docs
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout source code
+
+    - name: Render terraform docs inside the README.md and fail if changes are presented
+      uses: terraform-docs/gh-actions@v1.0.0
+      with:
+        working-dir: .
+        config-file: .terraform-docs.yml
+        fail-on-diff: "true"
