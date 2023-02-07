@@ -14,8 +14,9 @@
 
 
 resource "google_pubsub_topic" "dataflow_deadletter_pubsub_topic" {
-  project = var.project
-  name    = local.dataflow_output_deadletter_topic_name
+  project      = var.project
+  name         = local.dataflow_output_deadletter_topic_name
+  kms_key_name = var.pubsub_kms_key_name
 }
 
 resource "google_pubsub_subscription" "dataflow_deadletter_pubsub_sub" {
@@ -37,6 +38,12 @@ resource "google_storage_bucket" "dataflow_job_temp_bucket" {
   name          = local.dataflow_temporary_gcs_bucket_name
   location      = var.region
   storage_class = "REGIONAL"
+  dynamic "encryption" {
+    for_each = (var.gcs_kms_key_name == "") ? [] : [1]
+    content {
+      default_kms_key_name = var.gcs_kms_key_name
+    }
+  }
 }
 
 resource "google_storage_bucket_object" "dataflow_job_temp_object" {
