@@ -14,6 +14,10 @@ The project is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - `providers` configuration because it prevents usage of this module with `count` and `for_each`. This module now inherits the default provider configuration from the caller, thereby simplifying module re-usability.
 
+### Fixed
+
+- Removed hardcoded project numbers in log panels in dashboard's JSON description
+
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2022-12-20
 

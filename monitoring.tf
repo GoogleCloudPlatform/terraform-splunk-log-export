@@ -702,7 +702,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             "logsPanel": {
               "filter": "resource.type=\"dataflow_step\"\nlog_id(\"dataflow.googleapis.com/worker\")\nseverity=ERROR",
               "resourceNames": [
-                "projects/798413660424"
+                "projects/${data.google_project.project.number}"
               ]
             }
           }
@@ -717,7 +717,7 @@ resource "google_monitoring_dashboard" "splunk-export-pipeline-dashboard" {
             "logsPanel": {
               "filter": "resource.type=\"dataflow_step\"\nlog_id(\"dataflow.googleapis.com/worker\")\njsonPayload.logger=\"System.out\"",
               "resourceNames": [
-                "projects/798413660424"
+                "projects/${data.google_project.project.number}"
               ]
             }
           }
