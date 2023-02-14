@@ -15,7 +15,7 @@ The project is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
-- Fixed hardcodded project in the dashboard json
+- Removed hardcoded project numbers in log panels in dashboard's JSON description
 
 <a name="v1.0.0"></a>
 ## [v1.0.0] - 2022-12-20
