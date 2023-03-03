@@ -72,9 +72,9 @@ To ensure proper pipeline operation, Terraform creates necessary IAM bindings at
 
 #### Dataflow permissions
 
-The Dataflow worker service service account is the identity used by the Dataflow worker VMs. This module offers three options in terms of which worker service account to use and how to manage their IAM permissions: 
+The Dataflow worker service service account is the identity used by the Dataflow worker VMs. This module offers three options in terms of which worker service account to use and how to manage their IAM permissions:
 
-1. Module uses your project's [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account) as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS if applicable. This is the **default behavior**. 
+1. Module uses your project's [Compute Engine default service account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account) as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS if applicable. This is the **default behavior**.
 
 2. Module creates a dedicated service account to be used as Dataflow worker service account, and manages any required IAM permissions. The module grants that service account necessary IAM roles such as `roles/dataflow.worker` and IAM permissions over Google Cloud resources required by the job such as Pub/Sub, Cloud Storage, and secret or KMS key if applicable. To use this option, set `dataflow_worker_service_account` to the name of this new service account.
 
@@ -111,7 +111,7 @@ For information on enabling Google Cloud Platform APIs, please see [Getting Star
 
 #### Setup working directory
 
-1. Copy placeholder vars file `variables.yaml` into new `terraform.tfvars` to hold your own settings.
+1. Copy placeholder vars file `sample.tfvars` into new `terraform.tfvars` to hold your own settings.
 2. Update placeholder values in `terraform.tfvars` to correspond to your GCP environment and desired settings. See [list of input parameters](#configurable-parameters) above.
 3. Initialize Terraform working directory and download plugins by running:
 
@@ -139,7 +139,7 @@ $ terraform apply
 
 1. Retrieve dashboard id from terraform output
 ```shell
-$ terraform output dataflow_log_export_dashboad
+$ terraform output dataflow_log_export_dashboard
 ```
 The output is of the form `"projects/{project_id_or_number}/dashboards/{dashboard_id}"`.
 
