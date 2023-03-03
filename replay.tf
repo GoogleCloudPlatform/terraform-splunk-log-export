@@ -23,6 +23,7 @@ run a regular terraform deployment (ex. terraform apply).
 resource "google_dataflow_job" "splunk_dataflow_replay" {
   count = var.deploy_replay_job == true ? 1 : 0
 
+  project           = var.project
   name              = local.dataflow_replay_job_name
   template_gcs_path = local.dataflow_pubsub_template_gcs_path
   temp_gcs_location = "gs://${local.dataflow_temporary_gcs_bucket_name}/${local.dataflow_temporary_gcs_bucket_path}"
