@@ -15,6 +15,7 @@ content: |-
 settings:
   indent: 4
   escape: false
-  default: false
-  required: false
+  default: true
+  required: true
+  html: true
   type: true

@@ -38,6 +38,12 @@ resource "google_storage_bucket" "dataflow_job_temp_bucket" {
   location                    = var.region
   storage_class               = "REGIONAL"
   uniform_bucket_level_access = true
+  dynamic "encryption" {
+    for_each = (var.gcs_kms_key_name == "") ? [] : [1]
+    content {
+      default_kms_key_name = var.gcs_kms_key_name
+    }
+  }
 }
 
 resource "google_storage_bucket_object" "dataflow_job_temp_object" {
