@@ -80,7 +80,7 @@ variable "splunk_hec_url" {
 variable "splunk_hec_token_source" {
   type        = string
   default     = "PLAINTEXT"
-  description = "(Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT"
+  description = "Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]."
 
   validation {
     condition     = contains(["PLAINTEXT", "KMS", "SECRET_MANAGER"], var.splunk_hec_token_source)
@@ -90,14 +90,14 @@ variable "splunk_hec_token_source" {
 
 variable "splunk_hec_token" {
   type        = string
-  description = "(Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`."
+  description = "Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`."
   default     = ""
   sensitive   = true
 }
 
 variable "splunk_hec_token_kms_encryption_key" {
   type        = string
-  description = "(Optional) The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS (default: '')"
+  description = "The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS"
   default     = ""
   validation {
     condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.splunk_hec_token_kms_encryption_key)) || var.splunk_hec_token_kms_encryption_key == ""
@@ -108,7 +108,7 @@ variable "splunk_hec_token_kms_encryption_key" {
 # TODO: Make cross variable validation once https://github.com/hashicorp/terraform/issues/25609 is resolved
 variable "splunk_hec_token_secret_id" {
   type        = string
-  description = "(Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '')"
+  description = "Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER"
   default     = ""
   validation {
     condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/secrets\\/[^\\n\\r\\/]+\\/versions\\/[^\\n\\r\\/]+$", var.splunk_hec_token_secret_id)) || var.splunk_hec_token_secret_id == ""
@@ -116,17 +116,30 @@ variable "splunk_hec_token_secret_id" {
   }
 }
 
+variable "gcs_kms_key_name" {
+  type        = string
+  description = <<EOF
+    Cloud KMS key resource ID, to be used as default encryption key for the temporary storage bucket used by the Dataflow job.
+    If set, make sure to pre-authorize Cloud Storage service agent associated with that bucket to use that key for encrypting and decrypting.
+  EOF
+  default     = ""
+  validation {
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.gcs_kms_key_name)) || var.gcs_kms_key_name == ""
+    error_message = "Cloud Storage KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
+  }
+}
+
 # Dataflow job parameters
 
 variable "dataflow_template_version" {
   type        = string
-  description = "(Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'"
+  description = "Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk'"
   default     = "latest"
 }
 
 variable "dataflow_worker_service_account" {
   type        = string
-  description = "(Optional) Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account."
+  description = "Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account."
   default     = ""
 
   validation {
@@ -145,54 +158,54 @@ variable "dataflow_job_name" {
 
 variable "dataflow_job_machine_type" {
   type        = string
-  description = "(Optional) Dataflow job worker machine type (default 'n1-standard-4')"
+  description = "Dataflow job worker machine type"
   default     = "n1-standard-4"
 }
 
 variable "dataflow_job_machine_count" {
-  description = "(Optional) Dataflow job max worker count (default 2)"
+  description = "Dataflow job max worker count"
   type        = number
   default     = 2
 }
 
 variable "dataflow_job_parallelism" {
-  description = "(Optional) Maximum parallel requests to Splunk (default 8)"
+  description = "Maximum parallel requests to Splunk"
   type        = number
   default     = 8
 }
 
 variable "dataflow_job_batch_count" {
-  description = "(Optional) Batch count of messages in single request to Splunk (default 50)"
+  description = "Batch count of messages in single request to Splunk"
   type        = number
   default     = 50
 }
 
 variable "dataflow_job_disable_certificate_validation" {
-  description = "(Optional) Boolean to disable SSL certificate validation (default `false`)"
+  description = "Boolean to disable SSL certificate validation"
   type        = bool
   default     = false
 }
 
 variable "dataflow_job_udf_gcs_path" {
   type        = string
-  description = "(Optional) GCS path for JavaScript file (default No UDF used)"
+  description = "GCS path for JavaScript file"
   default     = ""
 }
 
 variable "dataflow_job_udf_function_name" {
   type        = string
-  description = "(Optional) Name of JavaScript function to be called (default No UDF used)"
+  description = "Name of JavaScript function to be called"
   default     = ""
 }
 
 variable "deploy_replay_job" {
   type        = bool
-  description = "(Optional) Determines if replay pipeline should be deployed or not (default: `false`)"
+  description = "Determines if replay pipeline should be deployed or not"
   default     = false
 }
 
 variable "use_externally_managed_dataflow_sa" {
   type        = bool
   default     = false
-  description = "(Optional) Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module."
+  description = "Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module."
 }

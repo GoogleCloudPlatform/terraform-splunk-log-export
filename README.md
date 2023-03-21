@@ -16,33 +16,34 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 <!-- BEGIN_TF_DOCS -->
 #### Inputs
 
-| Name | Description | Type |
-|------|-------------|------|
-| <a name="input_dataflow_job_name"></a> [dataflow_job_name](#input_dataflow_job_name) | Dataflow job name. No spaces | `string` |
-| <a name="input_log_filter"></a> [log_filter](#input_log_filter) | Log filter to use when exporting logs | `string` |
-| <a name="input_network"></a> [network](#input_network) | Network to deploy into | `string` |
-| <a name="input_project"></a> [project](#input_project) | Project ID to deploy resources in | `string` |
-| <a name="input_region"></a> [region](#input_region) | Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below | `string` |
-| <a name="input_splunk_hec_url"></a> [splunk_hec_url](#input_splunk_hec_url) | Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088 | `string` |
-| <a name="input_create_network"></a> [create_network](#input_create_network) | Boolean value specifying if a new network needs to be created. | `bool` |
-| <a name="input_dataflow_job_batch_count"></a> [dataflow_job_batch_count](#input_dataflow_job_batch_count) | (Optional) Batch count of messages in single request to Splunk (default 50) | `number` |
-| <a name="input_dataflow_job_disable_certificate_validation"></a> [dataflow_job_disable_certificate_validation](#input_dataflow_job_disable_certificate_validation) | (Optional) Boolean to disable SSL certificate validation (default `false`) | `bool` |
-| <a name="input_dataflow_job_machine_count"></a> [dataflow_job_machine_count](#input_dataflow_job_machine_count) | (Optional) Dataflow job max worker count (default 2) | `number` |
-| <a name="input_dataflow_job_machine_type"></a> [dataflow_job_machine_type](#input_dataflow_job_machine_type) | (Optional) Dataflow job worker machine type (default 'n1-standard-4') | `string` |
-| <a name="input_dataflow_job_parallelism"></a> [dataflow_job_parallelism](#input_dataflow_job_parallelism) | (Optional) Maximum parallel requests to Splunk (default 8) | `number` |
-| <a name="input_dataflow_job_udf_function_name"></a> [dataflow_job_udf_function_name](#input_dataflow_job_udf_function_name) | (Optional) Name of JavaScript function to be called (default No UDF used) | `string` |
-| <a name="input_dataflow_job_udf_gcs_path"></a> [dataflow_job_udf_gcs_path](#input_dataflow_job_udf_gcs_path) | (Optional) GCS path for JavaScript file (default No UDF used) | `string` |
-| <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | (Optional) Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` |
-| <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | (Optional) Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account. | `string` |
-| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | (Optional) Determines if replay pipeline should be deployed or not (default: `false`) | `bool` |
-| <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` |
-| <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` |
-| <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | (Optional) Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` |
-| <a name="input_splunk_hec_token_kms_encryption_key"></a> [splunk_hec_token_kms_encryption_key](#input_splunk_hec_token_kms_encryption_key) | (Optional) The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS (default: '') | `string` |
-| <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | (Optional) Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER (default: '') | `string` |
-| <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | (Optional) Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. Default: PLAINTEXT | `string` |
-| <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` |
-| <a name="input_use_externally_managed_dataflow_sa"></a> [use_externally_managed_dataflow_sa](#input_use_externally_managed_dataflow_sa) | (Optional) Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module. | `bool` |
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_dataflow_job_name"></a> [dataflow_job_name](#input_dataflow_job_name) | Dataflow job name. No spaces | `string` | n/a | yes |
+| <a name="input_log_filter"></a> [log_filter](#input_log_filter) | Log filter to use when exporting logs | `string` | n/a | yes |
+| <a name="input_network"></a> [network](#input_network) | Network to deploy into | `string` | n/a | yes |
+| <a name="input_project"></a> [project](#input_project) | Project ID to deploy resources in | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input_region) | Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below | `string` | n/a | yes |
+| <a name="input_splunk_hec_url"></a> [splunk_hec_url](#input_splunk_hec_url) | Splunk HEC URL to write data to. Example: https://[MY_SPLUNK_IP_OR_FQDN]:8088 | `string` | n/a | yes |
+| <a name="input_create_network"></a> [create_network](#input_create_network) | Boolean value specifying if a new network needs to be created. | `bool` | `false` | no |
+| <a name="input_dataflow_job_batch_count"></a> [dataflow_job_batch_count](#input_dataflow_job_batch_count) | Batch count of messages in single request to Splunk | `number` | `50` | no |
+| <a name="input_dataflow_job_disable_certificate_validation"></a> [dataflow_job_disable_certificate_validation](#input_dataflow_job_disable_certificate_validation) | Boolean to disable SSL certificate validation | `bool` | `false` | no |
+| <a name="input_dataflow_job_machine_count"></a> [dataflow_job_machine_count](#input_dataflow_job_machine_count) | Dataflow job max worker count | `number` | `2` | no |
+| <a name="input_dataflow_job_machine_type"></a> [dataflow_job_machine_type](#input_dataflow_job_machine_type) | Dataflow job worker machine type | `string` | `"n1-standard-4"` | no |
+| <a name="input_dataflow_job_parallelism"></a> [dataflow_job_parallelism](#input_dataflow_job_parallelism) | Maximum parallel requests to Splunk | `number` | `8` | no |
+| <a name="input_dataflow_job_udf_function_name"></a> [dataflow_job_udf_function_name](#input_dataflow_job_udf_function_name) | Name of JavaScript function to be called | `string` | `""` | no |
+| <a name="input_dataflow_job_udf_gcs_path"></a> [dataflow_job_udf_gcs_path](#input_dataflow_job_udf_gcs_path) | GCS path for JavaScript file | `string` | `""` | no |
+| <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` | `"latest"` | no |
+| <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account. | `string` | `""` | no |
+| <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | Determines if replay pipeline should be deployed or not | `bool` | `false` | no |
+| <a name="input_gcs_kms_key_name"></a> [gcs_kms_key_name](#input_gcs_kms_key_name) | Cloud KMS key resource ID, to be used as default encryption key for the temporary storage bucket used by the Dataflow job.<br>    If set, make sure to pre-authorize Cloud Storage service agent associated with that bucket to use that key for encrypting and decrypting. | `string` | `""` | no |
+| <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` | `"10.128.0.0/20"` | no |
+| <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` | `""` | no |
+| <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` | `""` | no |
+| <a name="input_splunk_hec_token_kms_encryption_key"></a> [splunk_hec_token_kms_encryption_key](#input_splunk_hec_token_kms_encryption_key) | The Cloud KMS key to decrypt the HEC token string. Required if `splunk_hec_token_source` is type of KMS | `string` | `""` | no |
+| <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER | `string` | `""` | no |
+| <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. | `string` | `"PLAINTEXT"` | no |
+| <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` | `""` | no |
+| <a name="input_use_externally_managed_dataflow_sa"></a> [use_externally_managed_dataflow_sa](#input_use_externally_managed_dataflow_sa) | Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module. | `bool` | `false` | no |
 #### Outputs
 
 | Name | Description |
@@ -163,14 +164,10 @@ To delete resources created by Terraform, run the following then confirm:
 $ terraform destroy
 ```
 
-### TODOs
+### Using customer-managed encryption keys (CMEK)
 
-* Expose logging level knob
-* ~~Support KMS-encrypted HEC token~~
-* ~~Create replay pipeline~~
-* ~~Create secure network for self-contained setup if existing network is not provided~~
-* ~~Add Cloud Monitoring dashboard~~
-
+For those who require CMEK, this module accepts CMEK keys for the following services:
+- Cloud Storage: see `gcs_kms_key_name` input parameter. You are responsible for granting Cloud Storage service agent the role Cloud KMS CryptoKey Encrypter/Decrypter (`roles/cloudkms.cryptoKeyEncrypterDecrypter`) in order to use the provided Cloud KMS key for encrypting and decrypting objects in the temporary storage bucket. The Cloud KMS key must be available in the location that the temporary bucket is created in (specified in `var.region`). For more details, see [Use customer-managed encryption keys](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) in Cloud Storage docs.
 
 ### Authors
 
