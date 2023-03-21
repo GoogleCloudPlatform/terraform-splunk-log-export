@@ -116,6 +116,19 @@ variable "splunk_hec_token_secret_id" {
   }
 }
 
+variable "gcs_kms_key_name" {
+  type        = string
+  description = <<EOF
+    Cloud KMS key resource ID, to be used as default encryption key for the temporary storage bucket used by the Dataflow job.
+    If set, make sure to pre-authorize Cloud Storage service agent associated with that bucket to use that key for encrypting and decrypting.
+  EOF
+  default     = ""
+  validation {
+    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.gcs_kms_key_name)) || var.gcs_kms_key_name == ""
+    error_message = "Cloud Storage KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
+  }
+}
+
 # Dataflow job parameters
 
 variable "dataflow_template_version" {
@@ -195,17 +208,4 @@ variable "use_externally_managed_dataflow_sa" {
   type        = bool
   default     = false
   description = "Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module."
-}
-
-variable "gcs_kms_key_name" {
-  type        = string
-  description = <<EOF
-    The `id` of a Cloud KMS key that will be used to encrypt objects inserted into temporary bucket.
-    User must sure that `roles/cloudkms.cryptoKeyEncrypterDecrypter` is granted to this key for Cloud Storage Service Identity.
-  EOF
-  default     = ""
-  validation {
-    condition     = can(regex("^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$", var.gcs_kms_key_name)) || var.gcs_kms_key_name == ""
-    error_message = "Cloud Storage KMS key name must match: '^projects\\/[^\\n\\r\\/]+\\/locations\\/[^\\n\\r\\/]+\\/keyRings\\/[^\\n\\r\\/]+\\/cryptoKeys\\/[^\\n\\r\\/]+$' pattern."
-  }
 }

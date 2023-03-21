@@ -35,7 +35,7 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_dataflow_template_version"></a> [dataflow_template_version](#input_dataflow_template_version) | Dataflow template release version (default 'latest'). Override this for version pinning e.g. '2021-08-02-00_RC00'. Must specify version only since template GCS path will be deduced automatically: 'gs://dataflow-templates/`version`/Cloud_PubSub_to_Splunk' | `string` | `"latest"` | no |
 | <a name="input_dataflow_worker_service_account"></a> [dataflow_worker_service_account](#input_dataflow_worker_service_account) | Name of Dataflow worker service account to be created and used to execute job operations. In the default case of creating a new service account (`use_externally_managed_dataflow_sa=false`), this parameter must be 6-30 characters long, and match the regular expression [a-z]([-a-z0-9]*[a-z0-9]). If the parameter is empty, worker service account defaults to project's Compute Engine default service account. If using external service account (`use_externally_managed_dataflow_sa=true`), this parameter must be the full email address of the external service account. | `string` | `""` | no |
 | <a name="input_deploy_replay_job"></a> [deploy_replay_job](#input_deploy_replay_job) | Determines if replay pipeline should be deployed or not | `bool` | `false` | no |
-| <a name="input_gcs_kms_key_name"></a> [gcs_kms_key_name](#input_gcs_kms_key_name) | The `id` of a Cloud KMS key that will be used to encrypt objects inserted into temporary bucket.<br>    User must sure that `roles/cloudkms.cryptoKeyEncrypterDecrypter` is granted to this key for Cloud Storage Service Identity. | `string` | `""` | no |
+| <a name="input_gcs_kms_key_name"></a> [gcs_kms_key_name](#input_gcs_kms_key_name) | Cloud KMS key resource ID, to be used as default encryption key for the temporary storage bucket used by the Dataflow job.<br>    If set, make sure to pre-authorize Cloud Storage service agent associated with that bucket to use that key for encrypting and decrypting. | `string` | `""` | no |
 | <a name="input_primary_subnet_cidr"></a> [primary_subnet_cidr](#input_primary_subnet_cidr) | The CIDR Range of the primary subnet | `string` | `"10.128.0.0/20"` | no |
 | <a name="input_scoping_project"></a> [scoping_project](#input_scoping_project) | Cloud Monitoring scoping project ID to create dashboard under.<br>This assumes a pre-existing scoping project whose metrics scope contains the `project` where dataflow job is to be deployed.<br>See [Cloud Monitoring settings](https://cloud.google.com/monitoring/settings) for more details on scoping project.<br>If parameter is empty, scoping project defaults to value of `project` parameter above. | `string` | `""` | no |
 | <a name="input_splunk_hec_token"></a> [splunk_hec_token](#input_splunk_hec_token) | Splunk HEC token. Must be defined if `splunk_hec_token_source` if type of `PLAINTEXT` or `KMS`. | `string` | `""` | no |
@@ -164,19 +164,10 @@ To delete resources created by Terraform, run the following then confirm:
 $ terraform destroy
 ```
 
-### CMEK
-Project support providing of Customer managed encription keys for different services.
-All CMEK configurations are not compartible with 
-1. GCS User is responsible for granting of `roles/cloudkms.cryptoKeyEncrypterDecrypter` for Cloud Storage service identity.
+### Using customer-managed encryption keys (CMEK)
 
-### TODOs
-
-* Expose logging level knob
-* ~~Support KMS-encrypted HEC token~~
-* ~~Create replay pipeline~~
-* ~~Create secure network for self-contained setup if existing network is not provided~~
-* ~~Add Cloud Monitoring dashboard~~
-
+For those who require CMEK, this module accepts CMEK keys for the following services:
+- Cloud Storage: see `gcs_kms_key_name` input parameter. You are responsible for granting Cloud Storage service agent the role Cloud KMS CryptoKey Encrypter/Decrypter (`roles/cloudkms.cryptoKeyEncrypterDecrypter`) in order to use the provided Cloud KMS key for encrypting and decrypting objects in the temporary storage bucket. The Cloud KMS key must be available in the location that the temporary bucket is created in (specified in `var.region`). For more details, see [Use customer-managed encryption keys](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) in Cloud Storage docs.
 
 ### Authors
 
