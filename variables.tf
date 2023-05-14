@@ -39,6 +39,12 @@ variable "subnet" {
   default     = ""
 }
 
+variable "subnet_complete_url" {
+  type        = string
+  description = "Complete URL of the Subnet to deploy into. This is required when deploying into a Subnet of a shared VPC network residing in a separate project."
+  default     = ""
+}
+
 variable "primary_subnet_cidr" {
   type        = string
   description = "The CIDR Range of the primary subnet"

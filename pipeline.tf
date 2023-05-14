@@ -100,7 +100,7 @@ resource "google_dataflow_job" "dataflow_job" {
   )
   region           = var.region
   network          = var.network
-  subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
+  subnetwork       = coalesce(var.subnet_complete_url, "regions/${var.region}/subnetworks/${local.subnet_name}")
   ip_configuration = "WORKER_IP_PRIVATE"
 
   lifecycle {

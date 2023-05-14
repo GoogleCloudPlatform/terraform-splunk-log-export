@@ -43,6 +43,7 @@ These deployment templates are provided as is, without warranty. See [Copyright 
 | <a name="input_splunk_hec_token_secret_id"></a> [splunk_hec_token_secret_id](#input_splunk_hec_token_secret_id) | Id of the Secret for Splunk HEC token. Required if `splunk_hec_token_source` is type of SECRET_MANAGER | `string` | `""` | no |
 | <a name="input_splunk_hec_token_source"></a> [splunk_hec_token_source](#input_splunk_hec_token_source) | Define in which type HEC token is provided. Possible options: [PLAINTEXT, KMS, SECRET_MANAGER]. | `string` | `"PLAINTEXT"` | no |
 | <a name="input_subnet"></a> [subnet](#input_subnet) | Subnet to deploy into. This is required when deploying into existing network (`create_network=false`) (e.g. Shared VPC) | `string` | `""` | no |
+| <a name="input_subnet_complete_url"></a> [subnet_complete_url](#input_subnet) | Complete URL of the Subnet to deploy into. This is required when deploying into a Subnet of a shared VPC network residing in a separate project. | `string` | `""` | no |
 | <a name="input_use_externally_managed_dataflow_sa"></a> [use_externally_managed_dataflow_sa](#input_use_externally_managed_dataflow_sa) | Determines if the worker service account provided by `dataflow_worker_service_account` variable should be created by this module (default) or is managed outside of the module. In the latter case, user is expected to apply and manage the service account IAM permissions over external resources (e.g. Cloud KMS key or Secret version) before running this module. | `bool` | `false` | no |
 #### Outputs
 
