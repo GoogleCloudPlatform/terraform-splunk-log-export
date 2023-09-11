@@ -38,7 +38,16 @@ resource "google_dataflow_job" "splunk_dataflow_replay" {
   subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration = "WORKER_IP_PRIVATE"
 
+  on_delete = "cancel"
+
+  lifecycle {
+    ignore_changes = [
+      additional_experiments # Ignore default experiments that may be added by Dataflow templates API
+    ]
+  }
+
   depends_on = [
-    google_compute_subnetwork.splunk_subnet
+    google_compute_subnetwork.splunk_subnet,
+    google_storage_bucket_object.dataflow_job_temp_object
   ]
 }
