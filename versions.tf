@@ -13,6 +13,6 @@ terraform {
   }
 
   provider_meta "google" {
-    module_name = "cloud-solutions/terraform-splunk-log-export-v1"
+    module_name = "cloud-solutions/terraform-splunk-log-export-deploy-v1"
   }
 }
