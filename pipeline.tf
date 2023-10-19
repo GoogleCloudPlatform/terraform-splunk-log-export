@@ -100,7 +100,7 @@ resource "google_dataflow_job" "dataflow_job" {
   )
   region           = var.region
   network          = var.network
-  subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
+  subnetwork       = var.create_network ? "regions/${var.region}/subnetworks/${local.subnet_name}" : "https://www.googleapis.com/compute/v1/projects/${var.project}/regions/${var.region}/subnetworks/${var.subnet}"
   ip_configuration = "WORKER_IP_PRIVATE"
 
   lifecycle {
