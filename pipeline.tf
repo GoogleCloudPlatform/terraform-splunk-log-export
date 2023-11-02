@@ -98,9 +98,10 @@ resource "google_dataflow_job" "dataflow_job" {
       tokenSecretId = local.splunk_hec_token_secret_version_id # Supported as of 2022-03-14-00_RC00
     } : {},
   )
-  region           = var.region
-  network          = var.network
-  subnetwork       = "regions/${var.region}/subnetworks/${local.subnet_name}"
+  region  = var.region
+  network = var.network
+  # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dataflow_job#subnetwork
+  subnetwork       = "https://www.googleapis.com/compute/v1/projects/${var.vpc_project}/regions/${var.region}/subnetworks/${local.subnet_name}"
   ip_configuration = "WORKER_IP_PRIVATE"
 
   lifecycle {

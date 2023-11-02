@@ -17,6 +17,10 @@ variable "project" {
   description = "Project ID to deploy resources in"
 }
 
+variable "vpc_project" {
+  description = "The name of the host project that owns the shared VPC/subnets"
+}
+
 variable "region" {
   type        = string
   description = "Region to deploy regional-resources into. This must match subnet's region if deploying into existing network (e.g. Shared VPC). See `subnet` parameter below"
